@@ -33,6 +33,7 @@ export function LoginPage() {
     getTestUser().then((response) => {
       console.log('User:', response);
       setUser(response);
+      localStorage.setItem('user_id', JSON.stringify(response.id));
     });
   };
 

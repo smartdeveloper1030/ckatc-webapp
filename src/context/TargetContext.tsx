@@ -71,11 +71,11 @@ export function TargetProvider({ children }: { children: React.ReactNode }) {
               promptDelay: target.prompt_schedule,
               previousTrial: 'no',
               status: 'not-started',
-              completed: 0,
+              completed: target.dtt_data[0].count,
               // total: target.dtt_data[0].count,
               // progress: '0' + '/' + target.dtt_data[0].count,
-              total: 5,
-              progress: '0/5',
+              total: target.desired_daily_tirals,
+              progress: target.dtt_data[0].count + '/' + target.desired_daily_tirals,
               target: target
             };
             section.items.push(item);
