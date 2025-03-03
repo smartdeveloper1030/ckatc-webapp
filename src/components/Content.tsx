@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { MoreVertical } from 'lucide-react';
 import { Footer } from './Footer';
 import { useTarget } from '../context/TargetContext';
 import { useUser } from '../context/UserContext';
@@ -38,11 +37,6 @@ export const Content = () => {
     fieldof1_9: false,
   });
 
-  const [responseText, setResponseText] = useState<PromptResponse>({
-    text: '',
-    description: ''
-  });
-
   useEffect(() => {
     setPromptTypes({
       yes: false,
@@ -55,51 +49,8 @@ export const Content = () => {
       fieldof1_9: false,
     });
     
-    setResponseText({
-      text: '',
-      description: ''
-    });
     setStartTime(new Date().toISOString());
   }, [selectedTarget?.id]);
-
-  const getPromptResponse = (type: keyof typeof promptTypes): PromptResponse => {
-    const responses: Record<keyof typeof promptTypes, PromptResponse> = {
-      yes: {
-        text: 'Independent Response',
-        description: 'Student completed the task independently without any prompting.'
-      },
-      vocalPrompt: {
-        text: 'Verbal Prompt Required',
-        description: 'Student needed verbal instructions or cues to complete the task.'
-      },
-      gesturalPrompt: {
-        text: 'Gestural Prompt Required',
-        description: 'Student needed gestures or pointing to understand and complete the task.'
-      },
-      positionalPrompt: {
-        text: 'Physical Prompt Required',
-        description: 'Student needed physical guidance to complete the task.'
-      },
-      modeling: {
-        text: 'Modeling Required',
-        description: 'Student needed demonstration to understand and complete the task.'
-      },
-      no: {
-        text: 'No Response',
-        description: 'Student did not respond to the prompt or complete the task.'
-      },
-      refusedTrial: {
-        text: 'No Response',
-        description: 'Student did not respond to the prompt or complete the task.'
-      },
-      fieldof1_9: {
-        text: 'No Response',
-        description: 'Student did not respond to the prompt or complete the task.'
-      }
-    };
-
-    return responses[type];
-  };
 
   const handlePromptChange = (type: keyof typeof promptTypes) => {
     if (!selectedTarget) return;
@@ -115,7 +66,6 @@ export const Content = () => {
       
       if (newPromptTypes[type]) {
         updateProgress(selectedTarget.id);
-        setResponseText(getPromptResponse(type));
         
         const dttParams: RecordDTTParams = {
           student_id: curStudent?.id,
@@ -174,18 +124,7 @@ export const Content = () => {
                 <div className="w-24 shrink-0">
                   <span className="text-sm font-semibold text-gray-700">SD</span>
                 </div>
-                <div className="flex-1">
-                  <p className="text-gray-700">
-                    {responseText.text ? (
-                      <span className="text-[#2B4C7E] font-medium">{responseText.text}</span>
-                    ) : (
-                      "Awaiting response..."
-                    )}
-                  </p>
-                  {responseText.description && (
-                    <p className="text-sm text-gray-500 mt-1">{responseText.description}</p>
-                  )}
-                </div>
+                
               </div>
 
               {/* Target Section */}
@@ -209,10 +148,7 @@ export const Content = () => {
                 </div>
               </div>
             </div>
-
-            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-              <MoreVertical className="h-5 w-5 text-gray-500" />
-            </button>
+            
           </div>
 
           {/* Target Instructions Section */}
