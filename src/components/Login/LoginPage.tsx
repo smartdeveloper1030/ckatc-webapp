@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, LogIn, Lock, User } from 'lucide-react';
 import { getStudents, getTestUser } from '../../api/userApis';
 import { useUser } from '../../context/UserContext';
-import { Eye, EyeOff, LogIn, Lock, User } from 'lucide-react';
 
 export function LoginPage() {
   const { user, setUser, setStudents } = useUser();
@@ -30,17 +30,11 @@ export function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // if (!email || !password) {
-    //   setError('Please enter both email and password');
-    //   return;
-    // }
-    // fetchTestUser();
     getTestUser().then((response) => {
       console.log('User:', response);
       setUser(response);
     });
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1A365D] to-[#2B4C7E] flex items-center justify-center p-4">

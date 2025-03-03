@@ -71,6 +71,8 @@ export function TargetProvider({ children }: { children: React.ReactNode }) {
             previousTrial: 'no',
             status: 'not-started',
             completed: 0,
+            // total: target.dtt_data[0].count,
+            // progress: '0' + '/' + target.dtt_data[0].count,
             total: 5,
             progress: '0/5',
             target: target

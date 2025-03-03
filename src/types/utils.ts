@@ -119,11 +119,16 @@ export interface Student {
   time_zone: string;
 }
 
+export interface TrialCount {
+  count: number;
+}
+
 export interface TargetInfo {
   analyse_steps: string | null;
   created_at: string;
   description: string;
   desired_daily_tirals: number;
+  dtt_data: TrialCount[];
   id: number;
   instructions: string | null;
   interval_schedule: string | null;
