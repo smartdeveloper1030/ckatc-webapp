@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, Lock, User } from 'lucide-react';
-import { getStudents, getTestUser } from '../../api/userApis';
-import { useUser } from '../../context/UserContext';
+import { getStudents, getTestUser } from './../api/userApis';
+import { useUser } from '../context/UserContext';
 
 export function LoginPage() {
   const { user, setUser, setStudents } = useUser();

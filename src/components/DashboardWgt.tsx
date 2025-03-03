@@ -11,7 +11,7 @@ import {
   AlertCircle,
   User
 } from 'lucide-react';
-import { useUser } from '../../context/UserContext';
+import { useUser } from '../context/UserContext';
 
 interface SessionItem {
   client: string;

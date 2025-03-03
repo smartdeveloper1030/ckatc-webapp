@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { TargetProvider } from './context/TargetContext';
-import { DashboardWgt } from './components/Dashboard/DashboardWgt';
-import { LoginPage } from './components/Login/LoginPage';
+import { DashboardWgt } from './components/DashboardWgt';
+import { LoginPage } from './components/LoginPage';
 import { MainLayout } from './layouts/MainLayout';
 import { UserProvider } from './context/UserContext';
 
