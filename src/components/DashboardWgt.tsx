@@ -40,7 +40,7 @@ export const DashboardWgt = () => {
         type: 'Discrete Trial Training ',
         targets: student.target_counts,
         behaviors: 0,
-        image: "https://images.unsplash.com/photo-1588516903720-8ceb67f9ef84?w=150&h=150&fit=crop&q=80",
+        image: "https://images.unsplash.com/photo-1588516903720-8ceb67f9ef84?w=150&h=150&fit=crop&q=85",
       }));
       setSessions(sessions);
     }
@@ -121,7 +121,7 @@ export const DashboardWgt = () => {
   const handleSessionClick = (index: number) => {
     if (students && students.length > 0) {
       setCurStudent(students[index]);
-      navigate('/main');
+      navigate('/session');
     }
   };
 
@@ -198,10 +198,10 @@ export const DashboardWgt = () => {
                               <Target className="h-3 w-3" />
                               <span>{session.targets} targets</span>
                             </div>
-                            <div className="flex items-center gap-1 text-xs text-orange-600">
+                            {/* <div className="flex items-center gap-1 text-xs text-orange-600">
                               <AlertCircle className="h-3 w-3" />
                               <span>{session.behaviors} behaviors</span>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                         <div className="ml-auto text-right">

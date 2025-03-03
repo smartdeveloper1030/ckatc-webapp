@@ -57,29 +57,31 @@ export function TargetProvider({ children }: { children: React.ReactNode }) {
       setFlag(true);
       const sections: Section[] = [];
       programs.map((program: ProgramInfo) => {
-        const section: Section = {
-          title: program.title,
-          items: []
-        };
-        program.targets.map((target: TargetInfo) => {
-          const item: TargetItem = {
-            id: target.id.toString(),
-            title: target.target_name,
-            program: program.title,
-            description: target.description,
-            promptDelay: target.prompt_schedule,
-            previousTrial: 'no',
-            status: 'not-started',
-            completed: 0,
-            // total: target.dtt_data[0].count,
-            // progress: '0' + '/' + target.dtt_data[0].count,
-            total: 5,
-            progress: '0/5',
-            target: target
+        if (program.targets.length > 0) {
+          const section: Section = {
+            title: program.title,
+            items: []
           };
-          section.items.push(item);
-        });
-        sections.push(section);
+          program.targets.map((target: TargetInfo) => {
+            const item: TargetItem = {
+              id: target.id.toString(),
+              title: target.target_name,
+              program: program.title,
+              description: target.description,
+              promptDelay: target.prompt_schedule,
+              previousTrial: 'no',
+              status: 'not-started',
+              completed: 0,
+              // total: target.dtt_data[0].count,
+              // progress: '0' + '/' + target.dtt_data[0].count,
+              total: 5,
+              progress: '0/5',
+              target: target
+            };
+            section.items.push(item);
+          });
+          sections.push(section);
+        }
       });
       setSections(sections);
     }
