@@ -153,9 +153,9 @@ export interface ProgramInfo {
 }
 
 export interface RecordDTTParams {
-  student_id: number;
-  target_id: number;
-  dtt_value: number;
+  student_id: number | undefined  ;
+  target_id: string;
+  dtt_value: number | undefined;
   start_at?: string;
   end_at?: string;
 }

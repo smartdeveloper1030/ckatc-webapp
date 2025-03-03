@@ -3,6 +3,9 @@ import { MoreVertical } from 'lucide-react';
 import { Footer } from './Footer';
 import { useTarget } from '../context/TargetContext';
 import { useUser } from '../context/UserContext';
+import { RecordDTTParams } from '../types/utils';
+import { recordDTTValue } from '../api/userApis';
+
 interface PromptResponse {
   text: string;
   description: string;
@@ -22,6 +25,7 @@ interface DTT_Type {
 export const Content = () => {
   const {curStudent} = useUser();
   const { selectedTarget, updateProgress } = useTarget();
+  const [startTime, setStartTime] = useState<string | null>(null);
 
   const [promptTypes, setPromptTypes] = useState<DTT_Type>({
     yes: false,
@@ -33,14 +37,13 @@ export const Content = () => {
     refusedTrial: false,
     fieldof1_9: false,
   });
-  
+
   const [responseText, setResponseText] = useState<PromptResponse>({
     text: '',
     description: ''
   });
 
   useEffect(() => {
-    
     setPromptTypes({
       yes: false,
       vocalPrompt: false,
@@ -56,6 +59,7 @@ export const Content = () => {
       text: '',
       description: ''
     });
+    setStartTime(new Date().toISOString());
   }, [selectedTarget?.id]);
 
   const getPromptResponse = (type: keyof typeof promptTypes): PromptResponse => {
@@ -99,10 +103,10 @@ export const Content = () => {
 
   const handlePromptChange = (type: keyof typeof promptTypes) => {
     if (!selectedTarget) return;
-    console.log('--------------------------------');
-    console.log('selectedTarget:', selectedTarget);
-    console.log('curStudent:', curStudent);
     
+    const promptTypesList = Object.keys(promptTypes);
+    const promptIndex = promptTypesList.indexOf(type) + 1;
+
     setPromptTypes(prev => {
       const newPromptTypes = {
         ...prev,
@@ -113,6 +117,20 @@ export const Content = () => {
         updateProgress(selectedTarget.id);
         setResponseText(getPromptResponse(type));
         
+        const dttParams: RecordDTTParams = {
+          student_id: curStudent?.id,
+          target_id: selectedTarget?.id,
+          dtt_value: promptIndex,
+          start_at: startTime?.toString(),
+          end_at: new Date().toISOString(),
+        };
+        
+        recordDTTValue(dttParams).then(response => {
+          console.log('----', response);
+        });
+
+        setStartTime(new Date().toISOString());
+
         // Reset checkboxes after a short delay
         setTimeout(() => {
           setPromptTypes({

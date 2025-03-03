@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Student, UserInfo } from '../types/utils';
+import { RecordDTTParams, Student, UserInfo } from '../types/utils';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -61,5 +61,29 @@ export const getProgramsAndTargetsApi = async (studentId: number) => {
       console.error('Unexpected error:', error);
       throw new Error('An unexpected error occurred while fetching programs and targets.');
     }
+  }
+};
+
+export const recordDTTValue = async (params: RecordDTTParams) => {
+  try {
+      // Make the POST request using Axios
+      const response = await axios.post(`${API_URL}/dtts/recordDTT`, params, {
+          headers: {
+              'Content-Type': 'application/json',
+              // Add any other required headers here
+          },
+      });
+
+      // Axios automatically parses the response as JSON
+      return response.data;
+  } catch (error) {
+      // Check if the error is an Axios error
+      if (axios.isAxiosError(error)) {
+          console.error('Error recording DTT value:', error.response?.data);
+          throw new Error(error.response?.data?.message || `HTTP error! status: ${error.response?.status}`);
+      } else {
+          console.error('Unexpected error:', error);
+          throw new Error('An unexpected error occurred while recording DTT value.');
+      }
   }
 };
