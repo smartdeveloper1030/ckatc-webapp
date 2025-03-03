@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStudents, getTestUser } from '../../api/userApis';
-import { Eye, EyeOff, LogIn, Lock, Mail } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
+import { Eye, EyeOff, LogIn, Lock, User } from 'lucide-react';
 
-export const LoginPage = () => {
+export function LoginPage() {
   const { user, setUser, setStudents } = useUser();
 
-  const [email, setEmail] = useState('developer@ckatc.com');
-  const [password, setPassword] = useState('123456');
+  const [username, setUsername] = useState('ckatc.andres');
+  const [password, setPassword] = useState('12345678');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +41,7 @@ export const LoginPage = () => {
     });
   };
 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1A365D] to-[#2B4C7E] flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-xl shadow-xl overflow-hidden">
@@ -61,26 +62,26 @@ export const LoginPage = () => {
           
           <form onSubmit={handleSubmit}>
             <div className="space-y-5">
-              {/* Email Field */}
+              {/* Username Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                  Username
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
+                    <User className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
+                    id="username"
+                    name="username"
+                    type="text"
+                    autoComplete="username"
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg 
                              focus:ring-2 focus:ring-[#2B4C7E]/20 focus:border-[#2B4C7E] transition-colors"
-                    placeholder="you@example.com"
+                    placeholder="Enter your username"
                   />
                 </div>
               </div>

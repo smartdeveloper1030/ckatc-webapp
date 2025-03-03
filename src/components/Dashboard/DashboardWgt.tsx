@@ -37,7 +37,7 @@ export const DashboardWgt = () => {
         client: student.first_name + ' ' + student.last_name,
         time: '11:30 AM',
         duration: '90 min',
-        type: 'Natural Environment Teaching',
+        type: 'Discrete Trial Training ',
         targets: student.target_counts,
         behaviors: 0,
         image: "https://images.unsplash.com/photo-1588516903720-8ceb67f9ef84?w=150&h=150&fit=crop&q=80",
