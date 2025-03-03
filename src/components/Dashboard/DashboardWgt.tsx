@@ -38,8 +38,8 @@ export const DashboardWgt = () => {
         time: '11:30 AM',
         duration: '90 min',
         type: 'Natural Environment Teaching',
-        targets: 8,
-        behaviors: 1,
+        targets: student.target_counts,
+        behaviors: 0,
         image: "https://images.unsplash.com/photo-1588516903720-8ceb67f9ef84?w=150&h=150&fit=crop&q=80",
       }));
       setSessions(sessions);

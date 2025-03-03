@@ -8,7 +8,7 @@ interface PromptResponse {
   description: string;
 }
 
-interface PromptType {
+interface DTT_Type {
   yes: boolean;
   vocalPrompt: boolean;
   gesturalPrompt: boolean;
@@ -23,7 +23,7 @@ export const Content = () => {
   const {curStudent} = useUser();
   const { selectedTarget, updateProgress } = useTarget();
 
-  const [promptTypes, setPromptTypes] = useState<PromptType>({
+  const [promptTypes, setPromptTypes] = useState<DTT_Type>({
     yes: false,
     vocalPrompt: false,
     gesturalPrompt: false,
@@ -33,15 +33,14 @@ export const Content = () => {
     refusedTrial: false,
     fieldof1_9: false,
   });
+  
   const [responseText, setResponseText] = useState<PromptResponse>({
     text: '',
     description: ''
   });
 
   useEffect(() => {
-    console.log('--------------------------------');
-    console.log('selectedTarget:', selectedTarget);
-    console.log('curStudent:', curStudent);
+    
     setPromptTypes({
       yes: false,
       vocalPrompt: false,
@@ -100,7 +99,10 @@ export const Content = () => {
 
   const handlePromptChange = (type: keyof typeof promptTypes) => {
     if (!selectedTarget) return;
-
+    console.log('--------------------------------');
+    console.log('selectedTarget:', selectedTarget);
+    console.log('curStudent:', curStudent);
+    
     setPromptTypes(prev => {
       const newPromptTypes = {
         ...prev,

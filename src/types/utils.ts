@@ -115,6 +115,7 @@ export interface Student {
   primary_contact: student_contact;
   site: string | null;
   student_code: string;
+  target_counts: number;
   time_zone: string;
 }
 

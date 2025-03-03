@@ -61,11 +61,7 @@ export function TargetProvider({ children }: { children: React.ReactNode }) {
           title: program.title,
           items: []
         };
-        console.log('--------------------------------');
-        console.log('program:', program);
         program.targets.map((target: TargetInfo) => {
-          // console.log('--------------------------------');
-          // console.log('target:', target);
           const item: TargetItem = {
             id: target.id.toString(),
             title: target.target_name,
