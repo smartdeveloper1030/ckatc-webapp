@@ -13,7 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/dashboard" element={<DashboardWgt/>} />
-          <Route path="/app" element={<MainLayout />} />
+          <Route path="/main" element={<MainLayout />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </TargetProvider>

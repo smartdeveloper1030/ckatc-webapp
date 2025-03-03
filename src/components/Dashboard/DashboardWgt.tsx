@@ -121,7 +121,7 @@ export const DashboardWgt = () => {
   const handleSessionClick = (index: number) => {
     if (students && students.length > 0) {
       setCurStudent(students[index]);
-      navigate('/app');
+      navigate('/main');
     }
   };
 
