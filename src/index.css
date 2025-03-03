@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Aptos', sans-serif;
+  }
+}
+
+/* Import Aptos font */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
+
+/* Use DM Sans as a fallback for Aptos since Aptos isn't available on Google Fonts */
+:root {
+  font-family: 'DM Sans', sans-serif;
+}
