@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Navigator } from "../components/Navigator";
 import { Sider } from "../components/Sider";
 import { Content } from "../components/Content";
 import { useUser } from "../context/UserContext";
-import { getProgramsAndTargetsApi } from "../api/userApis";
+import { getProgramsAndTargetsApi, getStudentWithID } from "../api/userApis";
 import { ProgramInfo } from "../types/utils";
 import { useTarget } from "../context/TargetContext";
 
@@ -14,7 +14,9 @@ export interface ProgramsInfo {
 }
 
 export const MainLayout = () => {
-  const { curStudent } = useUser();
+  const [param] = useSearchParams();
+  const student_id = param.get("student_id");
+  const { curStudent, setCurStudent } = useUser();
   const { setPrograms } = useTarget();
 
   const [selectedStudent, setSelectedStudent] = useState("Example Student");
@@ -23,6 +25,18 @@ export const MainLayout = () => {
   const handleBackClick = () => {
     navigate("/dashboard");
   };
+
+  const getStudentDetail = async () => {
+    if (student_id) {
+      getStudentWithID(parseInt(student_id)).then((res) => {
+        setCurStudent(res.student);
+      });
+    }
+  };
+
+  useEffect(() => {
+    getStudentDetail();
+  }, [student_id]);
 
   useEffect(() => {
     if (curStudent) {
@@ -37,6 +51,16 @@ export const MainLayout = () => {
         });
         setPrograms(programs);
       });
+      // getProgramsWithStudentID({studentId: curStudent.id, startAt: new Date().toISOString()}).then((res) => {
+      //   const skills = res.data;
+      //   const programs: ProgramInfo[] = [];
+      //   skills.map((skill: ProgramsInfo) => {
+      //     skill.programs.map((program: ProgramInfo) => {
+      //        programs.push(program);
+      //     });
+      //   });
+      //   setPrograms(programs);
+      // });
     }
   }, [curStudent]);
 

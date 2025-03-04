@@ -1,40 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, Lock, User } from 'lucide-react';
-import { getStudents, getTestUser } from './../api/userApis';
-import { useUser } from '../context/UserContext';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff, LogIn, Lock, User } from "lucide-react";
+import { loginWithUsername } from "./../api/userApis";
+import { useUser } from "../context/UserContext";
 
 export function LoginPage() {
-  const { user, setUser, setStudents } = useUser();
+  const { setUser } = useUser();
 
-  const [username, setUsername] = useState('ckatc.andres');
-  const [password, setPassword] = useState('12345678');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (user?.id) {
-      getStudents(user?.id).then((response) => {
-        setStudents(response);
-        console.log('login Students:', response);
-        navigate('/dashboard');
-        setIsLoading(false);
-      });
-    }
-  }, [user]);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    getTestUser().then((response) => {
-      console.log('User:', response);
-      setUser(response);
-      localStorage.setItem('user_id', JSON.stringify(response.id));
-    });
+    loginWithUsername(username, password)
+      .then((response) => {
+        setUser(response.user);
+        localStorage.setItem("selected_user", JSON.stringify(response.user));
+        navigate("/dashboard");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setError(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -48,18 +45,21 @@ export function LoginPage() {
             <h1 className="text-2xl font-bold text-gray-900">ABA Therapist</h1>
             <p className="text-gray-600 mt-1">Sign in to your account</p>
           </div>
-          
+
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
               {error}
             </div>
           )}
-          
+
           <form onSubmit={handleSubmit}>
             <div className="space-y-5">
               {/* Username Field */}
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Username
                 </label>
                 <div className="relative">
@@ -80,10 +80,13 @@ export function LoginPage() {
                   />
                 </div>
               </div>
-              
+
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -115,7 +118,7 @@ export function LoginPage() {
                   </button>
                 </div>
               </div>
-              
+
               {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
@@ -127,17 +130,23 @@ export function LoginPage() {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 text-[#2B4C7E] focus:ring-[#2B4C7E] border-gray-300 rounded"
                   />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-gray-700"
+                  >
                     Remember me
                   </label>
                 </div>
                 <div className="text-sm">
-                  <a href="#" className="font-medium text-[#2B4C7E] hover:text-[#2B4C7E]/80">
+                  <a
+                    href="#"
+                    className="font-medium text-[#2B4C7E] hover:text-[#2B4C7E]/80"
+                  >
                     Forgot your password?
                   </a>
                 </div>
               </div>
-              
+
               {/* Submit Button */}
               <div>
                 <button
@@ -146,13 +155,31 @@ export function LoginPage() {
                   className={`w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent 
                            rounded-lg shadow-sm text-white bg-[#2B4C7E] hover:bg-[#2B4C7E]/90 
                            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2B4C7E]
-                           transition-colors ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                           transition-colors ${
+                             isLoading ? "opacity-70 cursor-not-allowed" : ""
+                           }`}
                 >
                   {isLoading ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Signing in...
                     </>
@@ -166,11 +193,14 @@ export function LoginPage() {
               </div>
             </div>
           </form>
-          
+
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <a href="#" className="font-medium text-[#2B4C7E] hover:text-[#2B4C7E]/80">
+              Don't have an account?{" "}
+              <a
+                href="#"
+                className="font-medium text-[#2B4C7E] hover:text-[#2B4C7E]/80"
+              >
                 Sign up
               </a>
             </p>

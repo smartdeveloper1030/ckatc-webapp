@@ -4,8 +4,8 @@ import { MenuList } from './MenuList';
 
 export function Sider() {
   return (
-    <aside className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
-      <Search />
+    <aside className="w-80 bg-white border-r border-gray-100 flex flex-col overflow-hidden">
+      {/* <Search /> */}
       <MenuList />
     </aside>
   );

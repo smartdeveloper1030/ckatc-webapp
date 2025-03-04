@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  Users, 
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Users,
   ClipboardCheck,
   Clock,
   Timer,
   Brain,
   Target,
   TrendingUp,
-  AlertCircle,
-  User
-} from 'lucide-react';
-import { useUser } from '../context/UserContext';
+  User,
+} from "lucide-react";
+import { useUser } from "../context/UserContext";
+import { getStudents } from "../api/userApis";
 
 interface SessionItem {
   client: string;
@@ -25,22 +25,35 @@ interface SessionItem {
 }
 
 export const DashboardWgt = () => {
-  const { students, setCurStudent } = useUser();   
+  const { user, students, setCurStudent, setStudents } = useUser();
   const [sessions, setSessions] = useState<SessionItem[]>([]);
-  
+
   const navigate = useNavigate();
 
+  const getStudentDetails = async (id: string) => {
+    getStudents(id).then((response) => {
+      setStudents(response);
+    });
+  };
+
   useEffect(() => {
-    console.log('DashboardWgt Students:', students);
+    if (user?.id) {
+      getStudentDetails(user?.id);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    console.log("DashboardWgt Students:", students);
     if (students && students.length > 0) {
       const sessions = students.map((student) => ({
-        client: student.first_name + ' ' + student.last_name,
-        time: '11:30 AM',
-        duration: '90 min',
-        type: 'Discrete Trial Training ',
+        client: student.first_name + " " + student.last_name,
+        time: "11:30 AM",
+        duration: "90 min",
+        type: "Discrete Trial Training ",
         targets: student.target_counts,
         behaviors: 0,
-        image: "https://images.unsplash.com/photo-1588516903720-8ceb67f9ef84?w=150&h=150&fit=crop&q=85",
+        image:
+          "https://images.unsplash.com/photo-1588516903720-8ceb67f9ef84?w=150&h=150&fit=crop&q=85",
       }));
       setSessions(sessions);
     }
@@ -53,7 +66,7 @@ export const DashboardWgt = () => {
       change: "+2",
       icon: Users,
       color: "text-blue-600",
-      bgColor: "bg-blue-100"
+      bgColor: "bg-blue-100",
     },
     {
       title: "Mastered Targets",
@@ -61,7 +74,7 @@ export const DashboardWgt = () => {
       change: "+12",
       icon: Target,
       color: "text-green-600",
-      bgColor: "bg-green-100"
+      bgColor: "bg-green-100",
     },
     {
       title: "VB-MAPP Due",
@@ -69,7 +82,7 @@ export const DashboardWgt = () => {
       change: "-2",
       icon: ClipboardCheck,
       color: "text-orange-600",
-      bgColor: "bg-orange-100"
+      bgColor: "bg-orange-100",
     },
     {
       title: "Behavior Reduction",
@@ -77,8 +90,8 @@ export const DashboardWgt = () => {
       change: "+8%",
       icon: TrendingUp,
       color: "text-purple-600",
-      bgColor: "bg-purple-100"
-    }
+      bgColor: "bg-purple-100",
+    },
   ];
 
   const upcomingSessions = [
@@ -91,9 +104,9 @@ export const DashboardWgt = () => {
           duration: "120 min",
           type: "DTT Session",
           bcba: "Dr. Anderson",
-          program: "Early Learner"
-        }
-      ]
+          program: "Early Learner",
+        },
+      ],
     },
     {
       date: "Wed, Feb 24",
@@ -104,7 +117,7 @@ export const DashboardWgt = () => {
           duration: "120 min",
           type: "Verbal Behavior",
           bcba: "Dr. Thompson",
-          program: "Advanced"
+          program: "Advanced",
         },
         {
           client: "Sophia L.",
@@ -112,22 +125,23 @@ export const DashboardWgt = () => {
           duration: "90 min",
           type: "DTT Session",
           bcba: "Dr. Wilson",
-          program: "Early Learner"
-        }
-      ]
-    }
+          program: "Early Learner",
+        },
+      ],
+    },
   ];
 
   const handleSessionClick = (index: number) => {
     if (students && students.length > 0) {
       setCurStudent(students[index]);
-      navigate('/session');
+      const id = students[index].id;
+      navigate(`/session?student_id=${id}`);
     }
   };
 
   const handleImageError = (index: number) => {
-    setSessions(prevSessions => 
-      prevSessions.map((session, i) => 
+    setSessions((prevSessions) =>
+      prevSessions.map((session, i) =>
         i === index ? { ...session, imageError: true } : session
       )
     );
@@ -138,7 +152,7 @@ export const DashboardWgt = () => {
       <div className="bg-white border-b border-gray-200 px-4 py-3">
         <h2 className="text-xl font-semibold text-gray-900">ABA Dashboard</h2>
       </div>
-      
+
       <div className="flex-1 p-6 bg-gray-50 overflow-y-auto">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -148,8 +162,16 @@ export const DashboardWgt = () => {
                   <div>
                     <p className="text-sm text-gray-500">{stat.title}</p>
                     <div className="flex items-baseline mt-1">
-                      <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
-                      <p className={`ml-2 text-sm ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                      <p className="text-2xl font-semibold text-gray-900">
+                        {stat.value}
+                      </p>
+                      <p
+                        className={`ml-2 text-sm ${
+                          stat.change.startsWith("+")
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
                         {stat.change}
                       </p>
                     </div>
@@ -165,13 +187,15 @@ export const DashboardWgt = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-sm">
               <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Today's Sessions</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Today's Sessions
+                </h3>
               </div>
               <div className="p-6">
                 <div className="space-y-4">
                   {sessions.map((session, index) => (
-                    <div 
-                      key={index} 
+                    <div
+                      key={index}
                       className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors"
                       onClick={() => handleSessionClick(index)}
                     >
@@ -182,8 +206,8 @@ export const DashboardWgt = () => {
                               <User className="h-8 w-8 text-gray-400" />
                             </div>
                           ) : (
-                            <img 
-                              src={session.image} 
+                            <img
+                              src={session.image}
                               alt={session.client}
                               className="w-full h-full object-cover"
                               onError={() => handleImageError(index)}
@@ -191,8 +215,12 @@ export const DashboardWgt = () => {
                           )}
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900">{session.client}</h4>
-                          <p className="text-sm text-gray-500">{session.type}</p>
+                          <h4 className="font-medium text-gray-900">
+                            {session.client}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {session.type}
+                          </p>
                           <div className="flex items-center gap-4 mt-1">
                             <div className="flex items-center gap-1 text-xs text-blue-600">
                               <Target className="h-3 w-3" />
@@ -205,8 +233,12 @@ export const DashboardWgt = () => {
                           </div>
                         </div>
                         <div className="ml-auto text-right">
-                          <div className="text-sm font-medium text-gray-900">{session.time}</div>
-                          <div className="text-sm text-gray-500">{session.duration}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {session.time}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {session.duration}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -217,32 +249,45 @@ export const DashboardWgt = () => {
 
             <div className="bg-white rounded-lg shadow-sm">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Upcoming Sessions</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Upcoming Sessions
+                </h3>
               </div>
               <div className="p-6">
                 <div className="space-y-6">
                   {upcomingSessions.map((day, dayIndex) => (
                     <div key={dayIndex}>
-                      <h4 className="text-sm font-medium text-gray-500 mb-3">{day.date}</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-3">
+                        {day.date}
+                      </h4>
                       <div className="space-y-3">
                         {day.sessions.map((session, sessionIndex) => (
-                          <div 
-                            key={sessionIndex} 
+                          <div
+                            key={sessionIndex}
                             className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                           >
                             <div className="w-10 h-10 bg-[#2B4C7E] rounded-lg flex items-center justify-center text-white font-medium">
-                              {session.client.split(' ')[0][0]}{session.client.split(' ')[1][0]}
+                              {session.client.split(" ")[0][0]}
+                              {session.client.split(" ")[1][0]}
                             </div>
                             <div className="flex-1">
-                              <h4 className="font-medium text-gray-900">{session.client}</h4>
+                              <h4 className="font-medium text-gray-900">
+                                {session.client}
+                              </h4>
                               <div className="flex items-center gap-2 mt-1">
-                                <span className="text-sm text-gray-500">{session.type}</span>
+                                <span className="text-sm text-gray-500">
+                                  {session.type}
+                                </span>
                                 <span className="text-xs text-gray-400">•</span>
-                                <span className="text-sm text-gray-500">{session.program}</span>
+                                <span className="text-sm text-gray-500">
+                                  {session.program}
+                                </span>
                               </div>
                               <div className="flex items-center gap-1 mt-1">
                                 <Brain className="h-3 w-3 text-[#2B4C7E]" />
-                                <span className="text-xs text-gray-500">{session.bcba}</span>
+                                <span className="text-xs text-gray-500">
+                                  {session.bcba}
+                                </span>
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -268,4 +313,4 @@ export const DashboardWgt = () => {
       </div>
     </div>
   );
-}
+};

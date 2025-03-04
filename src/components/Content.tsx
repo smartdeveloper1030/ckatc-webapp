@@ -4,12 +4,10 @@ import { useTarget } from '../context/TargetContext';
 import { useUser } from '../context/UserContext';
 import { RecordDTTParams } from '../types/utils';
 import { recordDTTValue } from '../api/userApis';
-
 interface PromptResponse {
   text: string;
   description: string;
 }
-
 interface DTT_Type {
   yes: boolean;
   vocalPrompt: boolean;
@@ -20,12 +18,10 @@ interface DTT_Type {
   refusedTrial: boolean;
   fieldof1_9: boolean;
 }
-
 export const Content = () => {
-  const {curStudent} = useUser();
+  const { curStudent } = useUser();
   const { selectedTarget, updateProgress } = useTarget();
   const [startTime, setStartTime] = useState<string | null>(null);
-
   const [promptTypes, setPromptTypes] = useState<DTT_Type>({
     yes: false,
     vocalPrompt: false,
@@ -36,7 +32,6 @@ export const Content = () => {
     refusedTrial: false,
     fieldof1_9: false,
   });
-
   useEffect(() => {
     setPromptTypes({
       yes: false,
@@ -48,25 +43,19 @@ export const Content = () => {
       refusedTrial: false,
       fieldof1_9: false,
     });
-    
     setStartTime(new Date().toISOString());
   }, [selectedTarget?.id]);
-
   const handlePromptChange = (type: keyof typeof promptTypes) => {
     if (!selectedTarget) return;
-    
     const promptTypesList = Object.keys(promptTypes);
     const promptIndex = promptTypesList.indexOf(type) + 1;
-
     setPromptTypes(prev => {
       const newPromptTypes = {
         ...prev,
         [type]: !prev[type]
       };
-      
       if (newPromptTypes[type]) {
         updateProgress(selectedTarget.id);
-        
         const dttParams: RecordDTTParams = {
           student_id: curStudent?.id,
           target_id: selectedTarget?.id,
@@ -74,13 +63,10 @@ export const Content = () => {
           start_at: startTime?.toString(),
           end_at: new Date().toISOString(),
         };
-        
         recordDTTValue(dttParams).then(response => {
           console.log('----', response);
         });
-
         setStartTime(new Date().toISOString());
-
         // Reset checkboxes after a short delay
         setTimeout(() => {
           setPromptTypes({
@@ -95,7 +81,6 @@ export const Content = () => {
           });
         }, 300);
       }
-      
       return newPromptTypes;
     });
   };
@@ -124,7 +109,9 @@ export const Content = () => {
                 <div className="w-24 shrink-0">
                   <span className="text-sm font-semibold text-gray-700">SD</span>
                 </div>
-                
+                <div className="w-24 shrink-0">
+                  <span className="text-sm font-semibold text-gray-700">{selectedTarget.target.sd}</span>
+                </div>
               </div>
 
               {/* Target Section */}
@@ -154,6 +141,9 @@ export const Content = () => {
           {/* Target Instructions Section */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Target Instructions</h3>
+            {/* <div>
+              {selectedTarget.target.instructions}
+            </div> */}
             <div className="space-y-4">
               {/* Prompt Delay & Previous Trial */}
               <div className="flex gap-8">
