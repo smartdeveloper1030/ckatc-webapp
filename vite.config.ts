@@ -12,6 +12,5 @@ export default defineConfig({
     headers: {
       "x-frame-options": "DENY",
     },
-    host: "127.0.0.1",
   },
 });
