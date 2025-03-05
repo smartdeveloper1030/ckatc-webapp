@@ -51,16 +51,6 @@ export const MainLayout = () => {
         });
         setPrograms(programs);
       });
-      // getProgramsWithStudentID({studentId: curStudent.id, startAt: new Date().toISOString()}).then((res) => {
-      //   const skills = res.data;
-      //   const programs: ProgramInfo[] = [];
-      //   skills.map((skill: ProgramsInfo) => {
-      //     skill.programs.map((program: ProgramInfo) => {
-      //        programs.push(program);
-      //     });
-      //   });
-      //   setPrograms(programs);
-      // });
     }
   }, [curStudent]);
 
