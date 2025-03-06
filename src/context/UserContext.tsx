@@ -9,7 +9,7 @@ import React, {
 import { UserInfo, Student } from "../types/utils";
 import { getStudents, getUserDetail } from "./../api/userApis";
 import supabase from "../library/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface UserContextType {
   user: UserInfo | undefined;
@@ -26,9 +26,23 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const pathname = location.pathname;
   const [user, setUser] = useState<UserInfo | undefined>(undefined);
   const [students, setStudents] = useState<Student[]>([]);
   const [curStudent, setCurStudent] = useState<Student | undefined>(undefined);
+
+  useEffect(() => {
+    const isAuth = !!localStorage.getItem("selected_user");
+
+    if (isAuth && pathname === "/") {
+      navigate("/dashboard");
+    }
+
+    if (!isAuth && pathname !== "/") {
+      navigate("/");
+    }
+  }, [pathname]);
 
   // Sign-out function
   const signOut = useCallback(async () => {
