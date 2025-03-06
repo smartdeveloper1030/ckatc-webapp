@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LogIn, Lock, User } from "lucide-react";
-import { loginWithUsername } from "./../api/userApis";
+import { getEmailWithUsername } from "./../api/userApis";
 import { useUser } from "../context/UserContext";
+import supabase from "../library/supabaseClient";
 
 export function LoginPage() {
-  const { setUser } = useUser();
+  const { getUserData } = useUser();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -16,13 +17,34 @@ export function LoginPage() {
 
   const navigate = useNavigate();
 
+  const signInWithUsername = async (username: string, password: string) => {
+    try {
+      const resp = await getEmailWithUsername(username);
+      const email = resp?.email;
+      if (!email) {
+        throw new Error("No email found");
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        throw error;
+      }
+      console.log({ data });
+      getUserData(data?.user?.id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    loginWithUsername(username, password)
+    signInWithUsername(username, password)
       .then((response) => {
-        setUser(response.user);
-        localStorage.setItem("selected_user", JSON.stringify(response.user));
+        console.log({ user: response });
         navigate("/dashboard");
       })
       .catch((error) => {

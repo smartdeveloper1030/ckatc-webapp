@@ -3,13 +3,12 @@ import { RecordDTTParams, Student, UserInfo } from "../types/utils";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const loginWithUsername = async (username: string, password: string) => {
+export const getEmailWithUsername = async (username: string) => {
   try {
     const response = await axios.post(
-      `${API_URL}/users/loginWithUsername`,
+      `${API_URL}/users/getEmailWithUsername`,
       {
         username: username,
-        password: password,
       },
       {
         headers: {
@@ -22,14 +21,14 @@ export const loginWithUsername = async (username: string, password: string) => {
   } catch (error) {
     // Check if the error is from Axios
     if (axios.isAxiosError(error)) {
-      console.error("Error login with username:", error.response?.data);
+      console.error("Error get email with username:", error.response?.data);
       throw new Error(
-        error.response?.data?.message || "Failed to login with username"
+        error.response?.data?.message || "Failed to get email with username"
       );
     } else {
       console.error("Unexpected error:", error);
       throw new Error(
-        "An unexpected error occurred while login with username."
+        "An unexpected error occurred while get email with username."
       );
     }
   }
@@ -152,26 +151,43 @@ export const getStudentWithID = async (studentId: number) => {
   }
 };
 
-export const getProgramsWithStudentID = async ({studentId, startAt}: {studentId: number, startAt: string}) => {
+export const getProgramsWithStudentID = async ({
+  studentId,
+  startAt,
+}: {
+  studentId: number;
+  startAt: string;
+}) => {
   try {
-    const response = await axios.post(`${API_URL}/therapists/getProgramsWithStudentID`, {
-      student_id: studentId,
-      start_at: startAt,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await axios.post(
+      `${API_URL}/therapists/getProgramsWithStudentID`,
+      {
+        student_id: studentId,
+        start_at: startAt,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     // Axios automatically handles the response as JSON, so you can directly access response.data
     return response.data;
   } catch (error) {
     // Check if the error is from Axios
     if (axios.isAxiosError(error)) {
-      console.error('Error fetching programs and targets:', error.response?.data);
-      throw new Error(error.response?.data?.message || 'Failed to fetch programs and targets');
+      console.error(
+        "Error fetching programs and targets:",
+        error.response?.data
+      );
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch programs and targets"
+      );
     } else {
-      console.error('Unexpected error:', error);
-      throw new Error('An unexpected error occurred while fetching programs and targets.');
+      console.error("Unexpected error:", error);
+      throw new Error(
+        "An unexpected error occurred while fetching programs and targets."
+      );
     }
   }
 };

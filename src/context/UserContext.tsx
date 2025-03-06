@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  Dispatch,
 } from "react";
 import { UserInfo, Student } from "../types/utils";
 import { getStudents, getUserDetail } from "./../api/userApis";
@@ -18,6 +19,7 @@ interface UserContextType {
   curStudent: Student | undefined;
   setCurStudent: (student: Student) => void;
   signOut: () => void;
+  getUserData: Dispatch<any>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -61,23 +63,29 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Fetch user data from localStorage and API
-  const getUserData = useCallback(async () => {
-    const selectedUser = localStorage.getItem("selected_user");
-    const userInfo = selectedUser ? JSON.parse(selectedUser) : null;
-
-    if (userInfo?.id) {
-      try {
-        const response = await getUserDetail(userInfo.id);
-        setUser(response);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
+  const getUserData = useCallback(async (userId: string | undefined) => {
+    try {
+      if (!userId) {
+        console.error("User ID is required to fetch user data.");
+        return;
       }
+
+      const response = await getUserDetail(userId);
+      setUser(response);
+      localStorage.setItem("selected_user", JSON.stringify(response));
+    } catch (error) {
+      console.error("Error fetching user details:", error);
     }
   }, []);
 
   // Fetch user data on component mount
   useEffect(() => {
-    getUserData();
+    const selectedUser = localStorage.getItem("selected_user");
+    const userInfo = selectedUser ? JSON.parse(selectedUser) : null;
+
+    if (userInfo?.id) {
+      getUserData(userInfo.id);
+    }
   }, [getUserData]);
 
   // Fetch students data when user changes
@@ -97,6 +105,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         curStudent,
         setCurStudent,
         signOut,
+        getUserData,
       }}
     >
       {children}
