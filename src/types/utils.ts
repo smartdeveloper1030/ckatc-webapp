@@ -91,6 +91,7 @@ export interface ProgramInfo {
 }
 
 export interface RecordDTTParams {
+  session_id: number | undefined;
   student_id: number | undefined  ;
   target_id: string;
   dtt_value: number | undefined;

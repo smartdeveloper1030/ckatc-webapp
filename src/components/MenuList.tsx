@@ -43,7 +43,10 @@ export const MenuList = () => {
           <button 
             className="w-full flex items-center justify-between p-4 hover:bg-gray-100 
                      transition-all duration-300 group"
-            onClick={() => toggleProgramItem(index)}
+            onClick={() => {
+              toggleProgramItem(index);
+              console.log({section, index});
+            }}
           >
             <span className={`text-sm font-medium text-left pr-4 transition-all duration-300
               ${expandedPrograms.includes(index) ? 'text-[#2B4C7E]' : 'text-gray-600'}`}>

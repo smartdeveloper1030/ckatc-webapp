@@ -20,7 +20,7 @@ interface DTT_Type {
 }
 export const Content = () => {
   const { curStudent } = useUser();
-  const { selectedTarget, updateProgress } = useTarget();
+  const { session, selectedTarget, updateProgress } = useTarget();
   const [startTime, setStartTime] = useState<string | null>(null);
   const [promptTypes, setPromptTypes] = useState<DTT_Type>({
     yes: false,
@@ -57,6 +57,7 @@ export const Content = () => {
       if (newPromptTypes[type]) {
         updateProgress(selectedTarget.id);
         const dttParams: RecordDTTParams = {
+          session_id: session?.id,
           student_id: curStudent?.id,
           target_id: selectedTarget?.id,
           dtt_value: promptIndex,

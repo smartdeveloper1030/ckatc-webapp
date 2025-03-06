@@ -30,7 +30,7 @@ interface SessionItem {
 
 export const DashboardWgt = () => {
   const { user, students, setCurStudent, curStudent, setStudents } = useUser();
-  const { setPrograms } = useTarget();
+  const { setPrograms, setSession } = useTarget();
   const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [schedule, setSchedule] = useState<SessionInfo[]>([]);
   const [expandedSession, setExpandedSession] = useState<{sessionInfo: SessionInfo, sessionIndex: number} | null>(null);
@@ -132,6 +132,7 @@ export const DashboardWgt = () => {
 
   const toggleSession = (item: SessionInfo, index: number) => {
     console.log({item, index});
+    setSession(item);
     getSessionsDetails(item.id, item.student_id).then((response) => {
       setAllProgramsAndTargets(response);
     });

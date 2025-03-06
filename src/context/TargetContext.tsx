@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ProgramInfo, TargetInfo } from '../types/utils';
+import { ProgramInfo, SessionInfo, TargetInfo } from '../types/utils';
 
 interface TargetItem {
   id: string;
@@ -30,6 +30,8 @@ interface TargetContextType {
   setExpandedSections: React.Dispatch<React.SetStateAction<number[]>>;
   programs: ProgramInfo[];
   setPrograms: React.Dispatch<React.SetStateAction<ProgramInfo[]>>;
+  session: SessionInfo | undefined;
+  setSession: React.Dispatch<React.SetStateAction<SessionInfo | undefined>>;
 }
 
 const TargetContext = createContext<TargetContextType | undefined>(undefined);
@@ -39,6 +41,7 @@ export function TargetProvider({ children }: { children: React.ReactNode }) {
   const [sections, setSections] = useState<Section[]>([]);
   const [expandedPrograms, setExpandedSections] = useState<number[]>([]);
   const [programs, setPrograms] = useState<ProgramInfo[]>([]);
+  const [session, setSession] = useState<SessionInfo | undefined>(undefined);
   const [flag, setFlag] = useState(false);
 
   // Auto-select first item and expand first section on mount
@@ -197,7 +200,9 @@ export function TargetProvider({ children }: { children: React.ReactNode }) {
       expandedPrograms,
       setExpandedSections,
       programs,
-      setPrograms
+      setPrograms,
+      session,
+      setSession
     }}>
       {children}
     </TargetContext.Provider>
