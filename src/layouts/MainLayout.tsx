@@ -38,21 +38,23 @@ export const MainLayout = () => {
     getStudentDetail();
   }, [student_id]);
 
-  useEffect(() => {
-    if (curStudent) {
-      setSelectedStudent(curStudent.first_name + " " + curStudent.last_name);
-      getProgramsAndTargetsApi(curStudent.id).then((res) => {
-        const skills = res.data;
-        const programs: ProgramInfo[] = [];
-        skills.map((skill: ProgramsInfo) => {
-          skill.programs.map((program: ProgramInfo) => {
-            programs.push(program);
-          });
-        });
-        setPrograms(programs);
-      });
-    }
-  }, [curStudent]);
+  // useEffect(() => {
+  //   if (curStudent) {
+  //     setSelectedStudent(curStudent.first_name + " " + curStudent.last_name);
+  //     getProgramsAndTargetsApi(curStudent.id).then((res) => {
+  //       console.log({res});
+  //       const programsData = res.inTreatmentPrograms;
+  //       // const skills = res.data;
+  //       const programs: ProgramInfo[] = [];
+  //       programsData.map((program: ProgramInfo) => {
+  //         programs.push(program);
+  //       });
+  //       setPrograms(programs);
+  //       // console.log(skills);
+  //       // setPrograms(res.inTreatmentPrograms);
+  //     });
+  //   }
+  // }, [curStudent]);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">

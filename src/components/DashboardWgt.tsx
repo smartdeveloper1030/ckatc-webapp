@@ -9,10 +9,14 @@ import {
   Target,
   TrendingUp,
   User,
+  Settings,
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { getStudents } from "../api/userApis";
-
+import { getSessionsWithTherapist } from "../api/getSessionsWithTherapist";
+import { AllProgramsAndTargets, ProgramInfo, SessionInfo } from "../types/utils";
+import { getSessionsDetails } from "../api/getSessionsDetails";
+import { useTarget } from "../context/TargetContext";
 interface SessionItem {
   client: string;
   time: string;
@@ -25,8 +29,12 @@ interface SessionItem {
 }
 
 export const DashboardWgt = () => {
-  const { user, students, setCurStudent, setStudents } = useUser();
+  const { user, students, setCurStudent, curStudent, setStudents } = useUser();
+  const { setPrograms } = useTarget();
   const [sessions, setSessions] = useState<SessionItem[]>([]);
+  const [schedule, setSchedule] = useState<SessionInfo[]>([]);
+  const [expandedSession, setExpandedSession] = useState<{sessionInfo: SessionInfo, sessionIndex: number} | null>(null);
+  const [allProgramsAndTargets, setAllProgramsAndTargets] = useState<AllProgramsAndTargets | null>(null);
 
   const navigate = useNavigate();
 
@@ -94,48 +102,23 @@ export const DashboardWgt = () => {
     },
   ];
 
-  const upcomingSessions = [
-    {
-      date: "Tomorrow",
-      sessions: [
-        {
-          client: "Emma W.",
-          time: "9:00 AM",
-          duration: "120 min",
-          type: "DTT Session",
-          bcba: "Dr. Anderson",
-          program: "Early Learner",
-        },
-      ],
-    },
-    {
-      date: "Wed, Feb 24",
-      sessions: [
-        {
-          client: "Oliver K.",
-          time: "11:00 AM",
-          duration: "120 min",
-          type: "Verbal Behavior",
-          bcba: "Dr. Thompson",
-          program: "Advanced",
-        },
-        {
-          client: "Sophia L.",
-          time: "2:30 PM",
-          duration: "90 min",
-          type: "DTT Session",
-          bcba: "Dr. Wilson",
-          program: "Early Learner",
-        },
-      ],
-    },
-  ];
-
-  const handleSessionClick = (index: number) => {
+  const handleStudentClick = (index: number) => {
     if (students && students.length > 0) {
       setCurStudent(students[index]);
-      const id = students[index].id;
-      navigate(`/session?student_id=${id}`);
+      const student_id = students[index].id;
+      const therapist_id = user?.id;
+
+      if (therapist_id && student_id) {
+        getSessionsWithTherapist(therapist_id, student_id.toString()).then((response) => {
+          const items : SessionInfo[] = [];
+          response.sessions.map((s: SessionInfo) => {
+            items.push(s);
+          });
+          console.log({items});
+          setSchedule(items);
+        });
+      }
+      // navigate(`/session?student_id=${id}`);
     }
   };
 
@@ -145,6 +128,24 @@ export const DashboardWgt = () => {
         i === index ? { ...session, imageError: true } : session
       )
     );
+  };
+
+  const toggleSession = (item: SessionInfo, index: number) => {
+    console.log({item, index});
+    getSessionsDetails(item.id, item.student_id).then((response) => {
+      setAllProgramsAndTargets(response);
+    });
+    setExpandedSession(prev => {
+      if (prev?.sessionInfo === item && prev?.sessionIndex === index) {
+        return null;
+      }
+      return { sessionInfo: item, sessionIndex: index };
+    });
+  };
+
+  const handleProgramAndTargetClick = (program: ProgramInfo[]) => {
+    setPrograms(program); 
+    navigate('/session');
   };
 
   return (
@@ -188,7 +189,7 @@ export const DashboardWgt = () => {
             <div className="bg-white rounded-lg shadow-sm">
               <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Today's Sessions
+                  Students list
                 </h3>
               </div>
               <div className="p-6">
@@ -197,7 +198,7 @@ export const DashboardWgt = () => {
                     <div
                       key={index}
                       className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSessionClick(index)}
+                      onClick={() => handleStudentClick(index)}
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-14 h-14 rounded-lg overflow-hidden shadow-sm ring-1 ring-gray-200">
@@ -214,7 +215,7 @@ export const DashboardWgt = () => {
                             />
                           )}
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <h4 className="font-medium text-gray-900">
                             {session.client}
                           </h4>
@@ -226,19 +227,21 @@ export const DashboardWgt = () => {
                               <Target className="h-3 w-3" />
                               <span>{session.targets} targets</span>
                             </div>
-                            {/* <div className="flex items-center gap-1 text-xs text-orange-600">
-                              <AlertCircle className="h-3 w-3" />
-                              <span>{session.behaviors} behaviors</span>
-                            </div> */}
                           </div>
                         </div>
-                        <div className="ml-auto text-right">
-                          <div className="text-sm font-medium text-gray-900">
-                            {session.time}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {session.duration}
-                          </div>
+                        <div className="flex items-center">
+                          <button 
+                            className="p-4 rounded-full hover:bg-gray-200 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (students && students.length > 0) {
+                                setCurStudent(students[index]);
+                                navigate(`/sessionConfig`);
+                              }
+                            }}
+                          >
+                            <Settings className="h-10 w-10 text-gray-500" />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -250,58 +253,104 @@ export const DashboardWgt = () => {
             <div className="bg-white rounded-lg shadow-sm">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Upcoming Sessions
+                  Session Schedule
                 </h3>
               </div>
               <div className="p-6">
                 <div className="space-y-6">
-                  {upcomingSessions.map((day, dayIndex) => (
-                    <div key={dayIndex}>
-                      <h4 className="text-sm font-medium text-gray-500 mb-3">
-                        {day.date}
-                      </h4>
+                {schedule.map((item, index) => (
+                    <div key={index}>
                       <div className="space-y-3">
-                        {day.sessions.map((session, sessionIndex) => (
-                          <div
-                            key={sessionIndex}
-                            className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                          >
-                            <div className="w-10 h-10 bg-[#2B4C7E] rounded-lg flex items-center justify-center text-white font-medium">
-                              {session.client.split(" ")[0][0]}
-                              {session.client.split(" ")[1][0]}
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900">
-                                {session.client}
-                              </h4>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="text-sm text-gray-500">
-                                  {session.type}
-                                </span>
-                                <span className="text-xs text-gray-400">•</span>
-                                <span className="text-sm text-gray-500">
-                                  {session.program}
-                                </span>
+                          <div key={index}>
+                            <div
+                              className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                              onClick={() => toggleSession(item, index)}
+                            >
+                              <div className="w-10 h-10 bg-[#2B4C7E] rounded-lg flex items-center justify-center text-white font-medium">
+                              {curStudent?.first_name?.split(" ")[0][0]}
+                              {curStudent?.last_name?.split(" ")[0][0]}
                               </div>
-                              <div className="flex items-center gap-1 mt-1">
-                                <Brain className="h-3 w-3 text-[#2B4C7E]" />
-                                <span className="text-xs text-gray-500">
-                                  {session.bcba}
-                                </span>
+                              <div className="flex-1">
+                                <h4 className="font-medium text-gray-900">
+                                {curStudent?.first_name} {curStudent?.last_name}.
+                                </h4>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <span className="text-sm text-gray-500">
+                                  {item.created_at}
+                                  </span>
+                                  <span className="text-xs text-gray-400">•</span>
+                                  <span className="text-sm text-gray-500">
+                                    {/* {item.settings.advance_format} */}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1 mt-1">
+                                  <Brain className="h-3 w-3 text-[#2B4C7E]" />
+                                  <span className="text-xs text-gray-500">
+                                  {item.settings.advance_format}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="flex items-center gap-1 text-sm text-gray-500">
-                                <Clock className="h-4 w-4" />
-                                <span>{session.time}</span>
-                              </div>
-                              <div className="flex items-center gap-1 text-sm text-gray-500">
-                                <Timer className="h-4 w-4" />
-                                <span>{session.duration}</span>
+                              <div className={`transform transition-transform ${expandedSession?.sessionInfo === item && expandedSession?.sessionIndex === index ? 'rotate-180' : ''}`}>
+                                ▼
                               </div>
                             </div>
+                            {expandedSession?.sessionInfo === item && expandedSession?.sessionIndex === index && (
+                              <div className="mt-2 ml-4 space-y-2">
+
+                                {allProgramsAndTargets?.baselinePrograms?.length && allProgramsAndTargets?.baselinePrograms?.length > 0 && (
+                                <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                onClick={() => handleProgramAndTargetClick(allProgramsAndTargets?.baselinePrograms)}
+                                >
+                                  <span className="text-sm text-gray-700">BaseLine</span>
+                                  <button 
+                                    className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigate('/programConfig');
+                                    }}
+                                  >
+                                    <Settings className="h-5 w-5 text-gray-500" />
+                                  </button>
+                                </div>
+                                )}
+
+                                {allProgramsAndTargets?.inTreatmentPrograms?.length && allProgramsAndTargets?.inTreatmentPrograms?.length > 0 && (
+                                <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                onClick={() => handleProgramAndTargetClick(allProgramsAndTargets?.inTreatmentPrograms)}
+                                >
+                                  <span className="text-sm text-gray-700">Target</span>
+                                  <button 
+                                    className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigate('/programConfig');
+                                    }}
+                                  >
+                                    <Settings className="h-5 w-5 text-gray-500" />
+                                  </button>
+                                </div>
+                                )}
+
+                                {allProgramsAndTargets?.masteredPrograms?.length && allProgramsAndTargets?.masteredPrograms?.length > 0 && (  
+                                <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                onClick={() => handleProgramAndTargetClick(allProgramsAndTargets?.masteredPrograms)}
+                                >
+                                  <span className="text-sm text-gray-700">Maintenance</span>
+                                  <button 
+                                    className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigate('/programConfig');
+                                    }}
+                                  >
+                                    <Settings className="h-5 w-5 text-gray-500" />
+                                  </button>
+                                </div>
+                                )}
+                              </div>
+                            )}
                           </div>
-                        ))}
+                        
                       </div>
                     </div>
                   ))}
