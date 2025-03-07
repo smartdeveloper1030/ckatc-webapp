@@ -44,25 +44,31 @@ export const DashboardWgt = () => {
   useEffect(() => {
     const sessions = localStorage.getItem("sessions");
     const schedule = localStorage.getItem("schedule");
-    const expandedSessionData = localStorage.getItem("expandedSession");
     const student = localStorage.getItem("curStudent");
-    if (sessions && sessions.length > 0) {
-      setSessions(JSON.parse(sessions));
-      console.log({sessionsLength: sessions.length});
-    }
+    const expandedSessionData = localStorage.getItem("expandedSession");
+
+    if (sessions && sessions.length > 0) setSessions(JSON.parse(sessions));
+    if (schedule && schedule.length > 0) setSchedule(JSON.parse(schedule));
+    if (student) setCurStudent(JSON.parse(student));
     if (expandedSessionData) {
-      setExpandedSession(JSON.parse(expandedSessionData));
-      console.log({expandedSessionData: JSON.parse(expandedSessionData).sessionInfo});
-    }
-    if (schedule && schedule.length > 0) {
-      setSchedule(JSON.parse(schedule));
-      console.log({schedule: JSON.parse(schedule)});
-    }
-    if (student) {
-      setCurStudent(JSON.parse(student));
-      console.log({student: JSON.parse(student)});
+      const parsedData = JSON.parse(expandedSessionData);
+      setExpandedSession(parsedData);
+      // Also fetch session details when restoring expanded state
+      if (parsedData?.sessionInfo) {
+        getSessionsDetails(parsedData.sessionInfo.id, parsedData.sessionInfo.student_id).then((response) => {
+          setAllProgramsAndTargets(response);
+        });
+      }
     }
   }, []);
+
+  // useEffect(() => {
+  //   console.log({expandedSession, allProgramsAndTargets});
+  // }, [expandedSession, allProgramsAndTargets]);
+useEffect(() => {
+    console.log("expandedSession=========", expandedSession, schedule);
+  }, [expandedSession, schedule]);
+
 
   useEffect(() => {
     if (user?.id) {
@@ -121,13 +127,16 @@ export const DashboardWgt = () => {
 
   const toggleSession = (item: SessionInfo, index: number) => {
     console.log("toggleSessionclicked");
-    console.log({item, index});
     setSession(item);
     getSessionsDetails(item.id, item.student_id).then((response) => {
       setAllProgramsAndTargets(response);
+      if (response && Object.keys(response).length > 0) {
+        localStorage.setItem("allProgramsAndTargets", JSON.stringify(response));
+      }
     });
     setExpandedSession(prev => {
-      if (prev?.sessionInfo === item && prev?.sessionIndex === index) {
+      if (prev?.sessionInfo.id === item.id && prev?.sessionIndex === index) {
+        localStorage.removeItem("expandedSession");
         return null;
       }
       const expandedSessionData = { sessionInfo: item, sessionIndex: index };
@@ -222,6 +231,7 @@ export const DashboardWgt = () => {
             <div className="p-6">
               <div>
                 {schedule.map((item, index) => (
+                  console.log({item, index}),
                     <div key={index}>
                       <div className="space-y-3">
                           <div key={index}>
@@ -259,10 +269,10 @@ export const DashboardWgt = () => {
                                 
                             </div>
                             <div className="flex flex-col">
-                                  {expandedSession?.sessionInfo === item && expandedSession?.sessionIndex === index && (
-                                    <div className="mt-2 ml-4 space-y-2">
+                                  {expandedSession?.sessionInfo.id === item.id && expandedSession?.sessionIndex === index && (
+                                    <div className="flex flex-row mt-2 ml-2 gap-2">
                                       {allProgramsAndTargets?.baselinePrograms && allProgramsAndTargets.baselinePrograms.length > 0 && (
-                                      <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                      <div className="flex-1 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
                                       onClick={() => handleProgramAndTargetClick(allProgramsAndTargets.baselinePrograms)}
                                       >
                                         <span className="text-sm text-gray-700">BaseLine</span>
@@ -279,7 +289,7 @@ export const DashboardWgt = () => {
                                       )}
 
                                       {allProgramsAndTargets?.inTreatmentPrograms && allProgramsAndTargets.inTreatmentPrograms.length > 0 && (
-                                      <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                      <div className="flex-1 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
                                       onClick={() => handleProgramAndTargetClick(allProgramsAndTargets.inTreatmentPrograms)}
                                       >
                                         <span className="text-sm text-gray-700">Target</span>
@@ -296,7 +306,7 @@ export const DashboardWgt = () => {
                                       )}
 
                                       {allProgramsAndTargets?.masteredPrograms && allProgramsAndTargets.masteredPrograms.length > 0 && (  
-                                      <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+                                      <div className="flex-1 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
                                       onClick={() => handleProgramAndTargetClick(allProgramsAndTargets.masteredPrograms)}
                                       >
                                         <span className="text-sm text-gray-700">Maintenance</span>
