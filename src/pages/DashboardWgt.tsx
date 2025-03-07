@@ -26,7 +26,7 @@ interface SessionItem {
 }
 
 export const DashboardWgt = () => {
-  const { user, students, setCurStudent, curStudent, setStudents } = useUser();
+  const { user, students, setStudents, curStudent, setCurStudent } = useUser();
   const { setPrograms, setSession } = useTarget();
   const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [schedule, setSchedule] = useState<SessionInfo[]>([]);
@@ -38,6 +38,8 @@ export const DashboardWgt = () => {
   const getStudentDetails = async (id: string) => {
     getStudents(id).then((response) => {
       setStudents(response);
+      console.log("----------First Step: getStudentDetails(user.id)----------");
+      console.log({students: response});
     });
   };
 
@@ -61,14 +63,6 @@ export const DashboardWgt = () => {
       }
     }
   }, []);
-
-  // useEffect(() => {
-  //   console.log({expandedSession, allProgramsAndTargets});
-  // }, [expandedSession, allProgramsAndTargets]);
-useEffect(() => {
-    console.log("expandedSession=========", expandedSession, schedule);
-  }, [expandedSession, schedule]);
-
 
   useEffect(() => {
     if (user?.id) {
@@ -109,6 +103,8 @@ useEffect(() => {
           });
           setSchedule(items);
           if (items && items.length > 0) {
+            console.log("----------Second Step: getSessionsWithTherapist(therapist_id, student_id)----------");
+            console.log({items});
             localStorage.setItem("schedule", JSON.stringify(items));
           }
         });
@@ -126,13 +122,15 @@ useEffect(() => {
   };
 
   const toggleSession = (item: SessionInfo, index: number) => {
-    console.log("toggleSessionclicked");
     setSession(item);
     getSessionsDetails(item.id, item.student_id).then((response) => {
+      localStorage.setItem("session_id", JSON.stringify(item.id));
       setAllProgramsAndTargets(response);
       if (response && Object.keys(response).length > 0) {
         localStorage.setItem("allProgramsAndTargets", JSON.stringify(response));
       }
+      console.log("----------Third Step: getSessionsDetails(session_id, item.student_id)----------");
+      console.log({response});
     });
     setExpandedSession(prev => {
       if (prev?.sessionInfo.id === item.id && prev?.sessionIndex === index) {
@@ -145,8 +143,10 @@ useEffect(() => {
     });
   };
 
-  const handleProgramAndTargetClick = (program: ProgramInfo[]) => {
-    console.log("handleProgramAndTargetClick");
+  const handleProgramAndTargetClick = (program: ProgramInfo[], treatment_step: string) => {
+    console.log("------------Fourth Step: handleProgramAndTargetClick(programs)------------");
+    console.log({program});
+    localStorage.setItem("treatment_step", treatment_step);
     setPrograms(program); 
     navigate('/session');
   };
@@ -231,7 +231,6 @@ useEffect(() => {
             <div className="p-6">
               <div>
                 {schedule.map((item, index) => (
-                  console.log({item, index}),
                     <div key={index}>
                       <div className="space-y-3">
                           <div key={index}>
@@ -273,7 +272,7 @@ useEffect(() => {
                                     <div className="flex flex-row mt-2 ml-2 gap-2">
                                       {allProgramsAndTargets?.baselinePrograms && allProgramsAndTargets.baselinePrograms.length > 0 && (
                                       <div className="flex-1 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
-                                      onClick={() => handleProgramAndTargetClick(allProgramsAndTargets.baselinePrograms)}
+                                      onClick={() => handleProgramAndTargetClick(allProgramsAndTargets.baselinePrograms, "Baseline")}
                                       >
                                         <span className="text-sm text-gray-700">BaseLine</span>
                                         <button 
@@ -290,7 +289,7 @@ useEffect(() => {
 
                                       {allProgramsAndTargets?.inTreatmentPrograms && allProgramsAndTargets.inTreatmentPrograms.length > 0 && (
                                       <div className="flex-1 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
-                                      onClick={() => handleProgramAndTargetClick(allProgramsAndTargets.inTreatmentPrograms)}
+                                      onClick={() => handleProgramAndTargetClick(allProgramsAndTargets.inTreatmentPrograms, "In_Treatment")}
                                       >
                                         <span className="text-sm text-gray-700">Target</span>
                                         <button 
@@ -307,7 +306,7 @@ useEffect(() => {
 
                                       {allProgramsAndTargets?.masteredPrograms && allProgramsAndTargets.masteredPrograms.length > 0 && (  
                                       <div className="flex-1 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center justify-between"
-                                      onClick={() => handleProgramAndTargetClick(allProgramsAndTargets.masteredPrograms)}
+                                      onClick={() => handleProgramAndTargetClick(allProgramsAndTargets.masteredPrograms, "Maintenance")} 
                                       >
                                         <span className="text-sm text-gray-700">Maintenance</span>
                                         <button 

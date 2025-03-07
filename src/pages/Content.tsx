@@ -55,13 +55,18 @@ export const Content = () => {
       if (newPromptTypes[type]) {
         updateProgress(selectedTarget.id);
         const dttParams: RecordDTTParams = {
-          session_id: session?.id,
-          student_id: curStudent?.id,
+          // session_id: session?.id,
+          session_id: parseInt(localStorage.getItem("session_id") || "0"),
+          student_id: parseInt(localStorage.getItem("student_id") || "0"),
           target_id: selectedTarget?.id,
           dtt_value: promptIndex,
           start_at: startTime?.toString(),
           end_at: new Date().toISOString(),
         };
+
+        console.log("----------recordDTTValue----------");
+        console.log({dttParams});
+
         recordDTTValue(dttParams).then(response => {
           console.log('----', response);
         });
