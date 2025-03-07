@@ -147,7 +147,6 @@ export const Content = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </main>
   );
 }

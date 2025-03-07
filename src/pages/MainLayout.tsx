@@ -1,50 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Navigator } from "../components/Navigator";
-import { Sider } from "../components/Sider";
 import { Content } from "./Content";
 import { useUser } from "../context/UserContext";
-import { getProgramsAndTargetsApi, getStudentWithID } from "../api/userApis";
 import { ProgramInfo } from "../types/utils";
 import { useTarget } from "../context/TargetContext";
+import { MenuList } from "../components/MenuList";
+import { Footer } from "../components/Footer";
 
 export interface ProgramsInfo {
   programs: ProgramInfo[];
 }
 
 export const MainLayout = () => {
-  const [param] = useSearchParams();
-  const student_id = param.get("student_id");
-  const { curStudent, setCurStudent } = useUser();
-  const { setPrograms } = useTarget();
+  const { curStudent } = useUser();
 
-  const [selectedStudent, setSelectedStudent] = useState("Example Student");
+  const { selectedTarget } = useTarget();
+
+  const [selectedStudent] = useState("Example Student");
+  const [targetType, setTargetType] = useState<string>("");
+
   const navigate = useNavigate();
 
   const handleBackClick = () => {
     navigate("/dashboard");
   };
 
-  const getStudentDetail = async () => {
-    if (student_id) {
-      getStudentWithID(parseInt(student_id)).then((res) => {
-        setCurStudent(res.student);
-      });
+  useEffect(()=>{
+    if (selectedTarget?.target?.target_type) {
+      setTargetType(selectedTarget.target.target_type);
     }
-  };
-
-  useEffect(() => {
-    getStudentDetail();
-  }, [student_id]);
+  },[curStudent?.id, selectedTarget])
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      <Header onBackClick={handleBackClick} studentName={selectedStudent} />
+      <Header onBackClick={handleBackClick} studentName={curStudent?.first_name + " " + curStudent?.last_name} />
       <Navigator studentName={selectedStudent} />
       <div className="flex flex-1 overflow-hidden">
-        <Sider />
-        <Content />
+        <aside className="w-80 bg-white border-r flex flex-col overflow-hidden">
+          {/* <Search /> */}
+          <MenuList />
+        </aside>
+        <main className="flex-1 flex flex-col overflow-hidden">
+          {targetType === "DTT" && <Content />}
+          <Footer />
+        </main>
       </div>
     </div>
   );
