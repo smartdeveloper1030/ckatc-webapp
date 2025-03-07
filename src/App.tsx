@@ -1,12 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { TargetProvider } from './context/TargetContext';
-import { DashboardWgt } from './components/DashboardWgt';
-import { LoginPage } from './components/LoginPage';
-import { MainLayout } from './layouts/MainLayout';
+import { DashboardWgt } from './pages/DashboardWgt';
+import { LoginPage } from './pages/LoginPage';
+import { MainLayout } from './pages/MainLayout';
 import { UserProvider } from './context/UserContext';
 import { SessionConfig } from './components/SessionConfig/SessionConfig';
 import ProgramsConfig from './components/ProgramsConfig/ProgramsConfig';
-
 function App() {
   return (
     <BrowserRouter>

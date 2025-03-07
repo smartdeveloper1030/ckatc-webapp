@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LogIn, Lock, User } from "lucide-react";
-import { getEmailWithUsername } from "./../api/userApis";
+import { getEmailWithUsername } from "../api/userApis";
 import { useUser } from "../context/UserContext";
 import supabase from "../library/supabaseClient";
 

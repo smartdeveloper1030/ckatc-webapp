@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Footer } from './Footer';
+import { Footer } from '../components/Footer';
 import { useTarget } from '../context/TargetContext';
 import { useUser } from '../context/UserContext';
 import { RecordDTTParams } from '../types/utils';
 import { recordDTTValue } from '../api/userApis';
-interface PromptResponse {
-  text: string;
-  description: string;
-}
+import { ContentHeader } from '../components/ContentHeader';
+
 interface DTT_Type {
   yes: boolean;
   vocalPrompt: boolean;
@@ -89,8 +87,8 @@ export const Content = () => {
   if (!selectedTarget) {
     return (
       <main className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center min-h-[400px]">
+        <div className="flex-1 bg-gray-100 p-1 overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-sm p-1 flex items-center justify-center min-h-[400px]">
             <p className="text-gray-500 text-lg">Select a target from the menu to view details</p>
           </div>
         </div>
@@ -101,50 +99,12 @@ export const Content = () => {
 
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
-      <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex justify-between items-start mb-6">
-            <div className="space-y-4 flex-1">
-              {/* SD Section */}
-              <div className="flex gap-4">
-                <div className="w-24 shrink-0">
-                  <span className="text-sm font-semibold text-gray-700">SD</span>
-                </div>
-                <div className="w-24 shrink-0">
-                  <span className="text-sm font-semibold text-gray-700">{selectedTarget.target.sd}</span>
-                </div>
-              </div>
-
-              {/* Target Section */}
-              <div className="flex gap-4">
-                <div className="w-24 shrink-0">
-                  <span className="text-sm font-semibold text-gray-700">Target</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-gray-700">{selectedTarget.title}</p>
-                </div>
-              </div>
-
-              {/* Program Section */}
-              <div className="flex gap-4">
-                <div className="w-24 shrink-0">
-                  <span className="text-sm font-semibold text-gray-700">Program</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-gray-700">{selectedTarget.program}</p>
-                  <p className="text-sm text-gray-500 mt-1">{selectedTarget.description}</p>
-                </div>
-              </div>
-            </div>
-            
+      <div className="flex-1 bg-gray-100 p-1 overflow-y-auto">
+        <div className="bg-white rounded-lg shadow-sm p-6 min-h-min">
+          <div className="bg-white z-10 mb-6">
+            <ContentHeader />
           </div>
-
-          {/* Target Instructions Section */}
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Target Instructions</h3>
-            {/* <div>
-              {selectedTarget.target.instructions}
-            </div> */}
+          <div className="overflow-y-auto">
             <div className="space-y-4">
               {/* Prompt Delay & Previous Trial */}
               <div className="flex gap-8">

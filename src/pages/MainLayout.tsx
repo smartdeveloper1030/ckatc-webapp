@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Navigator } from "../components/Navigator";
 import { Sider } from "../components/Sider";
-import { Content } from "../components/Content";
+import { Content } from "./Content";
 import { useUser } from "../context/UserContext";
 import { getProgramsAndTargetsApi, getStudentWithID } from "../api/userApis";
 import { ProgramInfo } from "../types/utils";
@@ -37,24 +37,6 @@ export const MainLayout = () => {
   useEffect(() => {
     getStudentDetail();
   }, [student_id]);
-
-  // useEffect(() => {
-  //   if (curStudent) {
-  //     setSelectedStudent(curStudent.first_name + " " + curStudent.last_name);
-  //     getProgramsAndTargetsApi(curStudent.id).then((res) => {
-  //       console.log({res});
-  //       const programsData = res.inTreatmentPrograms;
-  //       // const skills = res.data;
-  //       const programs: ProgramInfo[] = [];
-  //       programsData.map((program: ProgramInfo) => {
-  //         programs.push(program);
-  //       });
-  //       setPrograms(programs);
-  //       // console.log(skills);
-  //       // setPrograms(res.inTreatmentPrograms);
-  //     });
-  //   }
-  // }, [curStudent]);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">

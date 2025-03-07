@@ -95,18 +95,8 @@ export function Header({ onBackClick, studentName }: HeaderProps) {
               <span className="text-gray-900 font-medium">{studentName}</span>
             </div>
           </div>
-
-          {/* Center: Title */}
-          <h1 className="text-xl font-semibold text-gray-900">Targets</h1>
-
           {/* Right: Session Timer and User Profile */}
           <div className="flex items-center gap-4">
-            {/* Session Timer */}
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
-              <Timer className="h-4 w-4 text-[#2B4C7E]" />
-              <span className="text-sm font-medium text-gray-700">45:00</span>
-            </div>
-
             {/* User Profile */}
             <div className="relative">
               <button
