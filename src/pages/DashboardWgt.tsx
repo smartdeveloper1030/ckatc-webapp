@@ -207,7 +207,7 @@ export const DashboardWgt = () => {
                             if (students && students.length > 0) {
                               setCurStudent(students[index]);
                               localStorage.setItem("curStudent", JSON.stringify(students[index]));
-                              navigate(`/sessionConfig`);
+                              navigate(`/SessionSetting`);
                             }
                           }}
                         >
@@ -279,7 +279,7 @@ export const DashboardWgt = () => {
                                           className="p-2 rounded-full hover:bg-gray-200 transition-colors"
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate('/programConfig');
+                                            navigate('/programSetting');
                                           }}
                                         >
                                           <Settings className="h-5 w-5 text-gray-500" />
@@ -296,7 +296,7 @@ export const DashboardWgt = () => {
                                           className="p-2 rounded-full hover:bg-gray-200 transition-colors"
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate('/programConfig');
+                                            navigate('/programSetting');
                                           }}
                                         >
                                           <Settings className="h-5 w-5 text-gray-500" />
@@ -313,7 +313,8 @@ export const DashboardWgt = () => {
                                           className="p-2 rounded-full hover:bg-gray-200 transition-colors"
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate('/programConfig');
+                                            console.log("----------Fourth Step: navigate('/programSetting')----------");
+                                            navigate('/programSetting');
                                           }}
                                         >
                                           <Settings className="h-5 w-5 text-gray-500" />

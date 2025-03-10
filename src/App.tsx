@@ -4,8 +4,9 @@ import { DashboardWgt } from './pages/DashboardWgt';
 import { LoginPage } from './pages/LoginPage';
 import { MainLayout } from './pages/MainLayout';
 import { UserProvider } from './context/UserContext';
-import { SessionConfig } from './components/SessionConfig/SessionConfig';
-import ProgramsConfig from './components/ProgramsConfig/ProgramsConfig';
+import { SessionSetting } from './pages/SessionSetting';
+import { ProgramSetting } from './pages/ProgramSetting';
+
 function App() {
   return (
     <BrowserRouter>
@@ -15,8 +16,8 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/dashboard" element={<DashboardWgt/>} />
           <Route path="/session" element={<MainLayout />} />
-          <Route path="/sessionConfig" element={<SessionConfig isOpen={true} onClose={() => window.history.back()} />} />
-          <Route path="/programConfig" element={<ProgramsConfig isOpen={true} onClose={() => window.history.back()} />} />
+          <Route path="/sessionSetting" element={<SessionSetting />} />
+          <Route path="/programSetting" element={<ProgramSetting />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </TargetProvider>
