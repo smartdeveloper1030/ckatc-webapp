@@ -1,16 +1,18 @@
 import { ChevronDown } from 'lucide-react';
-import { useTarget } from '../context/TargetContext';
+import { useTarget } from '../../context/TargetContext';
 
-export const MenuList = () => {
+export const ProgramsList = () => {
   const { selectedTarget, setSelectedTarget, sections, expandedPrograms, setExpandedSections } = useTarget();
   const toggleProgramItem = (index: number) => {
     setExpandedSections(prev => 
       prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
     );
   };
+
   const handleItemClick = (item: typeof selectedTarget) => {
     setSelectedTarget(item);
   };
+
   const getStatusColor = (status: 'not-started' | 'in-progress' | 'mastered') => {
     switch (status) {
       case 'mastered':
@@ -21,6 +23,7 @@ export const MenuList = () => {
         return 'bg-gray-300';
     }
   };
+
   const getStatusRing = (status: 'not-started' | 'in-progress' | 'mastered') => {
     switch (status) {
       case 'mastered':

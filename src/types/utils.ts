@@ -125,3 +125,7 @@ export interface AllProgramsAndTargets {
   inTreatmentPrograms: ProgramInfo[];
   masteredPrograms: ProgramInfo[];
 }
+
+export interface GlobalData {
+  current_student: Student;
+}

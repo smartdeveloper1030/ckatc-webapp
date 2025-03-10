@@ -1,15 +1,15 @@
 import {useState, useEffect} from "react";
 import { ChevronDown, RotateCcw, X } from "lucide-react";
-import { Header } from "./../../components/Header";
-import { useUser } from "./../../context/UserContext";
-import { SessionInfo, Setting } from "./../../types/utils";
+// import { Header } from "./../../components/Header";
+import { Setting } from "./../../types/utils";
 import { updateSessionSettings } from "./../../api/userApis";
+import { useDash } from "../../context/DashContext";
 
 export const SessionConfig = () => {
-    const {curStudent} = useUser();
+    const { setShowConfig, sessionInfo } = useDash();
 
     const [sessionId, setSessionId] = useState<number | null>(null);
-    const [studentId, setStudentId] = useState<number | null>(null);
+    const [studentId, setStudentId] = useState<number | null >(null);
     const [autoAdvance, setAutoAdvance] = useState(true);
     const [globalSetting, setGlobalSetting] = useState(false);
     const [displayMomentum, setDisplayMomentum] = useState(true);
@@ -21,34 +21,40 @@ export const SessionConfig = () => {
     const [settingInfo, setSettingInfo] = useState<Setting | null>(null);
 
     const handleReset = () => {
-      // Here you would typically reset the settings to default
-      const session_info: SessionInfo = localStorage.getItem("session_info") ? JSON.parse(localStorage.getItem("session_info") as string) : null;
-      setSessionId(session_info?.id);
-      setStudentId(session_info?.student_id);
-      const settings: Setting = session_info?.settings;
-      if (settings) {
-        setSettingInfo(settings);
-        setAutoAdvance(settings.auto_advance);
-        setDisplayMomentum(settings.display_momentum);
-        setMomentumType(settings.momentum_type as 'intermixed' | 'suggested' | 'multiple');
-        setNumProbes(settings.num_probes.toString());
-        setCorrectionTrials(settings.num_correction_trials.toString());
-        setSelectionMode(settings.selection_mode as 'random' | 'weighted' | 'ordered');
-        setAdvanceFormat(settings.advance_format);
-      }
+        if (!sessionInfo) {
+            console.warn("sessionInfo is undefined");
+            return; // Exit the function early if sessionInfo is undefined
+        }
+        
+        setSessionId(sessionInfo.id);
+        setStudentId(sessionInfo.student_id);
+        const settings: Setting = sessionInfo.settings; // No need to use optional chaining here since we already checked sessionInfo
+        if (settings) {
+            setSettingInfo(settings);
+            setAutoAdvance(settings.auto_advance);
+            setDisplayMomentum(settings.display_momentum);
+            setMomentumType(settings.momentum_type as 'intermixed' | 'suggested' | 'multiple');
+            setNumProbes(settings.num_probes.toString());
+            setCorrectionTrials(settings.num_correction_trials.toString());
+            setSelectionMode(settings.selection_mode as 'random' | 'weighted' | 'ordered');
+            setAdvanceFormat(settings.advance_format);
+        }
     }
 
     const handleSave = () => {
       // Here you would typically save the settings
       if (sessionId && studentId && settingInfo) {
-        console.log({sessionId, studentId, globalSetting, settingInfo})
-        updateSessionSettings(sessionId, studentId, globalSetting, settingInfo);
-      }
+        updateSessionSettings(sessionId, studentId, globalSetting, sessionInfo?.settings as Setting);
+    }
+      setShowConfig(false);
     };
 
     useEffect(() => {
-      handleReset();
-    }, [])
+        if (sessionInfo) {
+            console.log({sessionInfo})
+            handleReset();
+        }
+    }, [sessionInfo])
 
     useEffect(() => {
       if (settingInfo) {
@@ -71,11 +77,10 @@ export const SessionConfig = () => {
     }, [autoAdvance, displayMomentum, advanceFormat, momentumType, correctionTrials, numProbes, selectionMode]);
 
     return (
-        <div className="flex flex-col h-screen bg-white">
-          {/* Main content - Scrollable */}
+        <div className="flex flex-col h-full bg-white">
           <div className="flex-1 overflow-y-auto bg-gray-100">
             <div className="flex justify-center">
-              <div className="w-1/2 bg-white rounded-lg p-1 space-y-6 m-4">
+              <div className="w-full bg-white rounded-lg p-1 space-y-6 m-1">
                 <div className="bg-white rounded-lg p-10 space-y-6">
                   <div className="text-sm text-gray-600 italic">
                     *Changing these settings will only affect this device. Overall student settings will not change
@@ -347,6 +352,7 @@ export const SessionConfig = () => {
           <div className="flex-shrink-0 w-full flex justify-center gap-3 p-4 border-t border-gray-200 bg-white">
             <button
               className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+              onClick={() => setShowConfig(false)}
             >
               Cancel
             </button>

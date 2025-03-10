@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Navigator } from "../components/Navigator";
-import { Content } from "./Content";
+import { DTT } from "../components/Session/DTT";
 import { useUser } from "../context/UserContext";
 import { ProgramInfo } from "../types/utils";
 import { useTarget } from "../context/TargetContext";
-import { MenuList } from "../components/MenuList";
-import { Footer } from "../components/Footer";
+import { ProgramsList } from "../components/Session/ProgramsList";
+import { Footer } from "../components/Session/Footer";
 import { getSessionsDetails } from "../api/userApis";
 
 export interface ProgramsInfo {
@@ -51,10 +51,14 @@ export const SessionPage = () => {
   },[])
 
   useEffect(()=>{
+    if (curStudent) {
+      setHeaderName(curStudent.first_name + " " + curStudent.last_name.charAt(0).toUpperCase() + ".");
+    }
+
     if (selectedTarget?.target?.target_type) {
       setTargetType(selectedTarget.target.target_type);
     }
-  },[curStudent?.id, selectedTarget])
+  },[curStudent, selectedTarget])
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
@@ -63,10 +67,10 @@ export const SessionPage = () => {
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-80 bg-white border-r flex flex-col overflow-hidden">
           {/* <Search /> */}
-          <MenuList />
+          <ProgramsList />
         </aside>
         <main className="flex-1 flex flex-col overflow-hidden">
-          {targetType === "DTT" && <Content />}
+          {targetType === "DTT" && <DTT />}
           <Footer />
         </main>
       </div>

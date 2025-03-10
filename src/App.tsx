@@ -6,20 +6,23 @@ import { SessionPage } from './pages/SessionPage';
 import { UserProvider } from './context/UserContext';
 import { SessionSetting } from './pages/SessionSetting';
 import { ProgramSetting } from './pages/ProgramSetting';
+import { DashProvider } from './context/DashContext';
 
 function App() {
   return (
     <BrowserRouter>
       <UserProvider>
       <TargetProvider>
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/dashboard" element={<DashboardWgt/>} />
-          <Route path="/session" element={<SessionPage />} />
-          <Route path="/sessionSetting" element={<SessionSetting />} />
-          <Route path="/programSetting" element={<ProgramSetting />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <DashProvider>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/dashboard" element={<DashboardWgt/>} />
+            <Route path="/session" element={<SessionPage />} />
+            <Route path="/sessionSetting" element={<SessionSetting />} />
+            <Route path="/programSetting" element={<ProgramSetting />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </DashProvider>
       </TargetProvider>
       </UserProvider>
     </BrowserRouter>

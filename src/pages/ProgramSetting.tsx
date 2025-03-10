@@ -1,4 +1,3 @@
-import { X } from "lucide-react";
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { Header } from "../components/Header";
@@ -32,7 +31,6 @@ export const ProgramSetting = () => {
         });
       }
     };
-
   
     return (
         <div className="flex flex-col h-screen bg-white">

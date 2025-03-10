@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Footer } from '../components/Footer';
-import { useTarget } from '../context/TargetContext';
-import { useUser } from '../context/UserContext';
-import { RecordDTTParams } from '../types/utils';
-import { recordDTTValue } from '../api/userApis';
-import { ContentHeader } from '../components/ContentHeader';
+import { Footer } from './Footer';
+import { useTarget } from '../../context/TargetContext';
+import { useUser } from '../../context/UserContext';
+import { RecordDTTParams } from '../../types/utils';
+import { recordDTTValue } from '../../api/userApis';
+import { ContentHeader } from '../ContentHeader';
+import { useDash } from '../../context/DashContext';
 
 interface DTT_Type {
   yes: boolean;
@@ -16,9 +17,10 @@ interface DTT_Type {
   refusedTrial: boolean;
   fieldof1_9: boolean;
 }
-export const Content = () => {
+export const DTT = () => {
   const { curStudent } = useUser();
-  const { session, selectedTarget, updateProgress } = useTarget();
+  const { selectedTarget, updateProgress } = useTarget();
+  const { sessionInfo } = useDash();
   const [startTime, setStartTime] = useState<string | null>(null);
   const [promptTypes, setPromptTypes] = useState<DTT_Type>({
     yes: false,
@@ -57,8 +59,7 @@ export const Content = () => {
       if (newPromptTypes[type]) {
         updateProgress(selectedTarget.id);
         const dttParams: RecordDTTParams = {
-          // session_id: session?.id,
-          session_id: parseInt(localStorage.getItem("session_id") || "0"),
+          session_id: sessionInfo?.id,
           student_id: curStudent?.id,
           target_id: selectedTarget?.id,
           dtt_value: promptIndex,
