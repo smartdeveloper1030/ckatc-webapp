@@ -14,7 +14,7 @@ export interface ProgramsInfo {
   programs: ProgramInfo[];
 }
 
-export const MainLayout = () => {
+export const SessionPage = () => {
   const { curStudent } = useUser();
   const { selectedTarget, setPrograms } = useTarget();
   const [headerName, setHeaderName] = useState<string>("example student");

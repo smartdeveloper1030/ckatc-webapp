@@ -34,14 +34,6 @@ export const SessionSchedule = () => {
 
   const navigate = useNavigate();
 
-  const getStudentDetails = async (id: string) => {
-    getStudents(id).then((response) => {
-      setStudents(response);
-      console.log("----------First Step: getStudentDetails(user.id)----------");
-      console.log({students: response});
-    });
-  };
-
   useEffect(() => {
     const sessions = localStorage.getItem("sessions");
     const schedule = localStorage.getItem("schedule");
@@ -63,66 +55,6 @@ export const SessionSchedule = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (user?.id) {
-      getStudentDetails(user?.id);
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    if (students && students.length > 0) {
-      const sessions = students.map((student) => ({
-        client: student.first_name + " " + student.last_name,
-        time: "11:30 AM",
-        duration: "90 min",
-        type: "Discrete Trial Training ",
-        targets: student.target_counts ? student.target_counts : 0,
-        behaviors: 0,
-        image: "",
-      }));
-      setSessions(sessions);
-      if (sessions && sessions.length > 0) {
-        localStorage.setItem("sessions", JSON.stringify(sessions));
-      }
-    }
-  }, [students]);
-
-  const handleStudentClick = (index: number) => {
-    if (students && students.length > 0) {
-      setCurStudent(students[index]);
-      localStorage.setItem("curStudent", JSON.stringify(students[index]));
-      const student_id = students[index].id;
-      const therapist_id = user?.id;
-  
-      if (therapist_id && student_id) {
-        getSessionsWithTherapist(therapist_id, student_id.toString()).then((response) => {
-          console.log(response.sessions);
-          const session_info : SessionInfo = response.sessions;
-          const items: SessionInfo[] = [];
-          items.push(session_info);
-          setSchedule(items);
-          localStorage.setItem("schedule", JSON.stringify(items));
-          localStorage.setItem("session_info", JSON.stringify(session_info));
-        });
-      }
-      // navigate(`/session?student_id=${id}`);
-    }
-    console.log("----------handleStudentClick(index)----------");
-  };
-
-  const handleStudentSettingClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
-    e.stopPropagation();
-    handleStudentClick(index);
-    navigate('/sessionSetting');
-  }
-
-  const handleImageError = (index: number) => {
-    setSessions((prevSessions) =>
-      prevSessions.map((session, i) =>
-        i === index ? { ...session, imageError: true } : session
-      )
-    );
-  };
 
   const toggleSession = (item: SessionInfo, index: number) => {
     setSession(item);
@@ -135,6 +67,7 @@ export const SessionSchedule = () => {
       console.log("----------Third Step: getSessionsDetails(session_id, item.student_id)----------");
       console.log({response});
     });
+
     setExpandedSession(prev => {
       if (prev?.sessionInfo.id === item.id && prev?.sessionIndex === index) {
         localStorage.removeItem("expandedSession");
