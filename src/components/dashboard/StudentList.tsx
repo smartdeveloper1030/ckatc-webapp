@@ -29,7 +29,6 @@ export const StudentList = () => {
         getStudents(id).then((response) => {
             setStudents(response); 
             console.log('------------------First Step : getStudents------------------')
-            console.log({students: response})
         });
     };
 
@@ -52,9 +51,9 @@ export const StudentList = () => {
             }));
 
             setStudentList(sessions);
-            if (sessions && sessions.length > 0) {
-                localStorage.setItem("sessions", JSON.stringify(sessions));
-            }
+            // if (sessions && sessions.length > 0) {
+            //     localStorage.setItem("sessions", JSON.stringify(sessions));
+            // }
         }
     }, [students]);
 
@@ -67,7 +66,6 @@ export const StudentList = () => {
             if (therapist_id && student_id) {
                 getSessionsWithTherapist(therapist_id, student_id.toString()).then((response) => {
                     console.log("----------Second Step: getSessionsWithTherapist(therapist_id, student_id)----------");
-                    console.log(response.sessions);
                     const session_info : SessionInfo = response.sessions;
                     const items: SessionInfo[] = [];
                     items.push(session_info);

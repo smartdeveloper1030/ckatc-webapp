@@ -19,7 +19,8 @@ export const SessionSchedule = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (sessionInfo) {
+    console.log({curStudent});
+    if (sessionInfo && curStudent) {
         console.log({sessionInfo});
         getSessionsDetails(sessionInfo.id, sessionInfo.student_id).then((response) => {
             console.log('getSessionDetails(session_id, student_id)');
@@ -27,7 +28,7 @@ export const SessionSchedule = () => {
             setAllProgramsAndTargets(response); 
         });
     }
-  }, [sessionInfo])
+  }, [sessionInfo, curStudent])
 
   const handleProgramAndTargetClick = (program: ProgramInfo[], treatment_step: string) => {
     console.log("------------Fourth Step: handleProgramAndTargetClick(programs)------------");
@@ -36,6 +37,10 @@ export const SessionSchedule = () => {
     setPrograms(program); 
     navigate('/session');
   };
+
+  if (!curStudent) {
+    return <div></div>;
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm">
