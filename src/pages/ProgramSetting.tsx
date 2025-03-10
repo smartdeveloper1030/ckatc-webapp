@@ -1,8 +1,12 @@
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "../components/Header";
+import { useUser } from "../context/UserContext";
 
 export const ProgramSetting = () => {
+    const {curStudent} = useUser();
+    const [headerName, setHeaderName] = useState("Example Student");
+
     const [selectedItems, setSelectedItems] = useState<string[]>([
       '01-M Manipulates and explores objects from 1 minute',
       '02-M Responds to hearing his own name 5 times'
@@ -31,13 +35,19 @@ export const ProgramSetting = () => {
         });
       }
     };
+
+    useEffect(()=>{
+      if (curStudent) {
+        setHeaderName(curStudent.first_name + " " + curStudent.last_name);
+      }
+    }, [curStudent])
   
     return (
         <div className="flex flex-col h-screen bg-white">
           <div className="flex-shrink-0">
             <Header 
                 onBackClick={() => window.history.back()}
-                studentName="John Doe" />
+                studentName={headerName} />
           </div>
           
           <div className="flex-1 overflow-y-auto bg-gray-100">
