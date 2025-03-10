@@ -1,41 +1,74 @@
 import {useState, useEffect} from "react";
 import { ChevronDown, RotateCcw, X } from "lucide-react";
 import { Header } from "../components/Header";
+import { useUser } from "../context/UserContext";
+import { SessionInfo, Setting } from "../types/utils";
+import { updateSessionSettings } from "../api/userApis";
 
 export const SessionSetting = () => {
+    const {curStudent} = useUser();
+
+    const [sessionId, setSessionId] = useState<number | null>(null);
+    const [studentId, setStudentId] = useState<number | null>(null);
     const [autoAdvance, setAutoAdvance] = useState(true);
-    const [applyToAll, setApplyToAll] = useState(false);
+    const [globalSetting, setGlobalSetting] = useState(false);
     const [displayMomentum, setDisplayMomentum] = useState(true);
     const [momentumType, setMomentumType] = useState<'intermixed' | 'suggested' | 'multiple'>('intermixed');
-    const [selectionMode, setSelectionMode] = useState<'random' | 'weighted' | 'ordered'>('weighted');
-    const [autoAdvanceWhen, setAutoAdvanceWhen] = useState('after-scored');
+    const [advanceFormat, setAdvanceFormat] = useState('target');
     const [correctionTrials, setCorrectionTrials] = useState('3');
-    const [momentumProbes, setMomentumProbes] = useState('0');
-  
+    const [numProbes, setNumProbes] = useState('0');
+    const [selectionMode, setSelectionMode] = useState<'random' | 'weighted' | 'ordered'>('weighted');
+    const [settingInfo, setSettingInfo] = useState<Setting | null>(null);
+
     const handleReset = () => {
-      setAutoAdvance(true);
-      setApplyToAll(false);
-      setDisplayMomentum(true);
-      setMomentumType('intermixed');
-      setSelectionMode('weighted');
-      setAutoAdvanceWhen('after-scored');
-      setCorrectionTrials('3');
-      setMomentumProbes('0');
-    };
+      // Here you would typically reset the settings to default
+      const session_info: SessionInfo = localStorage.getItem("session_info") ? JSON.parse(localStorage.getItem("session_info") as string) : null;
+      setSessionId(session_info?.id);
+      setStudentId(session_info?.student_id);
+      const settings: Setting = session_info?.settings;
+      if (settings) {
+        setSettingInfo(settings);
+        setAutoAdvance(settings.auto_advance);
+        setDisplayMomentum(settings.display_momentum);
+        setMomentumType(settings.momentum_type as 'intermixed' | 'suggested' | 'multiple');
+        setNumProbes(settings.num_probes.toString());
+        setCorrectionTrials(settings.num_correction_trials.toString());
+        setSelectionMode(settings.selection_mode as 'random' | 'weighted' | 'ordered');
+        setAdvanceFormat(settings.advance_format);
+      }
+    }
 
     const handleSave = () => {
       // Here you would typically save the settings
-      console.log('Saving settings:', {
-        autoAdvance,
-        applyToAll,
-        displayMomentum,
-        momentumType,
-        selectionMode,
-        autoAdvanceWhen,
-        correctionTrials,
-        momentumProbes
-      });
+      if (sessionId && studentId && settingInfo) {
+        console.log({sessionId, studentId, globalSetting, settingInfo})
+        updateSessionSettings(sessionId, studentId, globalSetting, settingInfo);
+      }
     };
+
+    useEffect(() => {
+      handleReset();
+    }, [])
+
+    useEffect(() => {
+      if (settingInfo) {
+        setSettingInfo((prev) => {
+          if (prev) {
+            return {
+              ...prev,
+              auto_advance: autoAdvance,
+              display_momentum: displayMomentum,
+              advance_format: advanceFormat,
+              momentum_type: momentumType,
+              num_correction_trials: parseInt(correctionTrials),
+              num_probes: parseInt(numProbes),
+              selection_mode: selectionMode
+            };
+          }
+          return prev;
+        });
+      }
+    }, [autoAdvance, displayMomentum, advanceFormat, momentumType, correctionTrials, numProbes, selectionMode]);
 
     return (
         <div className="flex flex-col h-screen bg-white">
@@ -43,7 +76,7 @@ export const SessionSetting = () => {
           <div className="flex-shrink-0">
             <Header
               onBackClick={() => window.history.back()}
-              studentName="John Doe"
+              studentName= {curStudent?.first_name + " " + curStudent?.last_name}
             />
           </div>
 
@@ -57,7 +90,7 @@ export const SessionSetting = () => {
                   </div>
                   
                   <button 
-                    onClick={handleReset}
+                    onClick={()=>{handleReset()}}
                     className="flex items-center gap-2 text-[#2B4C7E] hover:text-[#2B4C7E]/80 font-medium"
                   >
                     <RotateCcw className="h-4 w-4" />
@@ -68,8 +101,8 @@ export const SessionSetting = () => {
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={applyToAll}
-                        onChange={() => setApplyToAll(!applyToAll)}
+                        checked={globalSetting}
+                        onChange={() => setGlobalSetting(!globalSetting)}
                         className="h-4 w-4 rounded border-gray-300 text-[#2B4C7E] focus:ring-[#2B4C7E]"
                       />
                       <span className="text-gray-700">Apply Settings to every Session with this Student</span>
@@ -106,12 +139,12 @@ export const SessionSetting = () => {
                       <label className="block text-sm text-gray-700 mb-2">When?</label>
                       <div className="relative">
                         <select
-                          value={autoAdvanceWhen}
-                          onChange={(e) => setAutoAdvanceWhen(e.target.value)}
+                          value={advanceFormat}
+                          onChange={(e) => setAdvanceFormat(e.target.value)}
                           className="w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#2B4C7E]/20 focus:border-[#2B4C7E]"
                         >
-                          <option value="after-scored">After Each Scored Target</option>
-                          <option value="after-session">After Session Completion(sticky Programs)</option>
+                          <option value="target">After Each Scored Target</option>
+                          <option value="program">After Session Completion(sticky Programs)</option>
                         </select>
                         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                       </div>
@@ -166,8 +199,8 @@ export const SessionSetting = () => {
                       <label className="block text-sm text-gray-700 mb-2">Number of Momentum Probes</label>
                       <div className="relative">
                         <select
-                          value={momentumProbes}
-                          onChange={(e) => setMomentumProbes(e.target.value)}
+                          value={numProbes}
+                          onChange={(e) => setNumProbes(e.target.value)}
                           className="w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#2B4C7E]/20 focus:border-[#2B4C7E]"
                         >
                           <option value="0">0</option>

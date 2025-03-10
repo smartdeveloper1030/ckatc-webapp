@@ -64,6 +64,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setStudents([]); // Clear students when signing out
     setCurStudent(undefined); // Clear current student when signing out
     navigate("/");
+
+    localStorage.clear();
   }, [navigate]);
 
   // Fetch students data for a user

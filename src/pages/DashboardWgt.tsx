@@ -8,9 +8,9 @@ import {
 } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { getStudents } from "../api/userApis";
-import { getSessionsWithTherapist } from "../api/getSessionsWithTherapist";
+import { getSessionsWithTherapist } from "../api/userApis";
 import { AllProgramsAndTargets, ProgramInfo, SessionInfo } from "../types/utils";
-import { getSessionsDetails } from "../api/getSessionsDetails";
+import { getSessionsDetails } from "../api/userApis";
 import { useTarget } from "../context/TargetContext";
 import { Header } from "../components/Header";
 
@@ -94,24 +94,28 @@ export const DashboardWgt = () => {
       localStorage.setItem("curStudent", JSON.stringify(students[index]));
       const student_id = students[index].id;
       const therapist_id = user?.id;
-
+  
       if (therapist_id && student_id) {
         getSessionsWithTherapist(therapist_id, student_id.toString()).then((response) => {
-          const items : SessionInfo[] = [];
-          response.sessions.map((s: SessionInfo) => {
-            items.push(s);
-          });
+          console.log(response.sessions);
+          const session_info : SessionInfo = response.sessions;
+          const items: SessionInfo[] = [];
+          items.push(session_info);
           setSchedule(items);
-          if (items && items.length > 0) {
-            console.log("----------Second Step: getSessionsWithTherapist(therapist_id, student_id)----------");
-            console.log({items});
-            localStorage.setItem("schedule", JSON.stringify(items));
-          }
+          localStorage.setItem("schedule", JSON.stringify(items));
+          localStorage.setItem("session_info", JSON.stringify(session_info));
         });
       }
       // navigate(`/session?student_id=${id}`);
     }
+    console.log("----------handleStudentClick(index)----------");
   };
+
+  const handleStudentSettingClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+    e.stopPropagation();
+    handleStudentClick(index);
+    navigate('/sessionSetting');
+  }
 
   const handleImageError = (index: number) => {
     setSessions((prevSessions) =>
@@ -202,14 +206,7 @@ export const DashboardWgt = () => {
                       <div className="flex items-center">
                         <button 
                           className="p-4 rounded-full hover:bg-gray-200 transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (students && students.length > 0) {
-                              setCurStudent(students[index]);
-                              localStorage.setItem("curStudent", JSON.stringify(students[index]));
-                              navigate(`/SessionSetting`);
-                            }
-                          }}
+                          onClick={(e) => handleStudentSettingClick(e, index)}
                         >
                           <Settings className="h-10 w-10 text-gray-500" />
                         </button>

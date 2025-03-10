@@ -8,7 +8,7 @@ import { ProgramInfo } from "../types/utils";
 import { useTarget } from "../context/TargetContext";
 import { MenuList } from "../components/MenuList";
 import { Footer } from "../components/Footer";
-import { getSessionsDetails } from "../api/getSessionsDetails";
+import { getSessionsDetails } from "../api/userApis";
 
 export interface ProgramsInfo {
   programs: ProgramInfo[];

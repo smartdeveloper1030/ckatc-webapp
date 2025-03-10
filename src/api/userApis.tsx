@@ -1,5 +1,5 @@
 import axios from "axios";
-import { RecordDTTParams, Student, UserInfo } from "../types/utils";
+import { RecordDTTParams, Setting, Student, UserInfo } from "../types/utils";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -216,6 +216,105 @@ export const recordDTTValue = async (params: RecordDTTParams) => {
       console.error("Unexpected error:", error);
       throw new Error(
         "An unexpected error occurred while recording DTT value."
+      );
+    }
+  }
+};
+
+export const getSessionsWithTherapist = async (therapist_id: string, student_id: string) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/sessions/getSessionsWithTherapist`,
+      {
+        therapist_id: therapist_id,
+        student_id: student_id,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    // Axios automatically handles the response as JSON, so you can directly access response.data
+    return response.data;
+  } catch (error) {
+    // Check if the error is from Axios
+    if (axios.isAxiosError(error)) {
+      console.error("Error login with username:", error.response?.data);
+      throw new Error(
+        error.response?.data?.message || "Failed to login with username"
+      );
+    } else {
+      console.error("Unexpected error:", error);
+      throw new Error(
+        "An unexpected error occurred while login with username."
+      );
+    }
+  }
+};
+
+export const getSessionsDetails = async (session_id: number, student_id: number) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/sessions/getSessionDetail`,
+      {
+        session_id: session_id,
+        student_id: student_id,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    // Axios automatically handles the response as JSON, so you can directly access response.data
+    return response.data;
+  } catch (error) {
+    // Check if the error is from Axios
+    if (axios.isAxiosError(error)) {
+      console.error("Error login with username:", error.response?.data);
+      throw new Error(
+        error.response?.data?.message || "Failed to login with username"
+      );
+    } else {
+      console.error("Unexpected error:", error);
+      throw new Error(
+        "An unexpected error occurred while login with username."
+      );
+    }
+  }
+};
+
+
+export const updateSessionSettings = async (session_id: number, student_id: number, is_global_setting: boolean, settings: Setting) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/sessions/updateSessionSettings`,
+      {
+        session_id: session_id,
+        student_id: student_id,
+        is_global_setting: is_global_setting,
+        settings: settings
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    // Axios automatically handles the response as JSON, so you can directly access response.data
+    return response.data;
+  } catch (error) {
+    // Check if the error is from Axios
+    if (axios.isAxiosError(error)) {
+      console.error("Error login with username:", error.response?.data);
+      throw new Error(
+        error.response?.data?.message || "Failed to login with username"
+      );
+    } else {
+      console.error("Unexpected error:", error);
+      throw new Error(
+        "An unexpected error occurred while login with username."
       );
     }
   }
