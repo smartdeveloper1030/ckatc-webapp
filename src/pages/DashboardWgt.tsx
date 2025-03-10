@@ -37,7 +37,7 @@ export const DashboardWgt = () => {
 
   const getStudentDetails = async (id: string) => {
     getStudents(id).then((response) => {
-      setStudents(response);
+      setStudents(response); 
       console.log("----------First Step: getStudentDetails(user.id)----------");
       console.log({students: response});
     });

@@ -30,6 +30,7 @@ export const Content = () => {
     refusedTrial: false,
     fieldof1_9: false,
   });
+
   useEffect(() => {
     setPromptTypes({
       yes: false,
@@ -43,6 +44,7 @@ export const Content = () => {
     });
     setStartTime(new Date().toISOString());
   }, [selectedTarget?.id]);
+
   const handlePromptChange = (type: keyof typeof promptTypes) => {
     if (!selectedTarget) return;
     const promptTypesList = Object.keys(promptTypes);
@@ -57,7 +59,7 @@ export const Content = () => {
         const dttParams: RecordDTTParams = {
           // session_id: session?.id,
           session_id: parseInt(localStorage.getItem("session_id") || "0"),
-          student_id: parseInt(localStorage.getItem("student_id") || "0"),
+          student_id: curStudent?.id,
           target_id: selectedTarget?.id,
           dtt_value: promptIndex,
           start_at: startTime?.toString(),
